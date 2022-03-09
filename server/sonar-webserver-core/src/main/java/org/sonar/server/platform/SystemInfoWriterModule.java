@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -37,6 +37,7 @@ import org.sonar.server.platform.monitoring.cluster.CeQueueGlobalSection;
 import org.sonar.server.platform.monitoring.cluster.EsClusterStateSection;
 import org.sonar.server.platform.monitoring.cluster.GlobalInfoLoader;
 import org.sonar.server.platform.monitoring.cluster.GlobalSystemSection;
+import org.sonar.server.platform.monitoring.cluster.ServerPushSection;
 import org.sonar.server.platform.monitoring.cluster.NodeSystemSection;
 import org.sonar.server.platform.monitoring.cluster.ProcessInfoProvider;
 import org.sonar.server.platform.monitoring.cluster.SearchNodesInfoLoaderImpl;
@@ -62,6 +63,7 @@ public class SystemInfoWriterModule extends Module {
       PluginsSection.class,
       SettingsSection.class,
       AlmConfigurationSection.class,
+      ServerPushSection.class,
       BundledSection.class
 
       );

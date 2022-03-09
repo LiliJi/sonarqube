@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import java.util.Date;
 import java.util.Optional;
+import javax.inject.Inject;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.rules.RuleType;
 import org.sonar.ce.task.projectanalysis.analysis.AnalysisMetadataHolder;
@@ -54,6 +55,7 @@ public class IssueLifecycle {
   private final DebtCalculator debtCalculator;
   private final AnalysisMetadataHolder analysisMetadataHolder;
 
+  @Inject
   public IssueLifecycle(AnalysisMetadataHolder analysisMetadataHolder, IssueWorkflow workflow, IssueFieldsSetter updater, DebtCalculator debtCalculator,
     RuleRepository ruleRepository) {
     this(analysisMetadataHolder, IssueChangeContext.createScan(new Date(analysisMetadataHolder.getAnalysisDate())), workflow, updater, debtCalculator, ruleRepository);
@@ -212,7 +214,6 @@ public class IssueLifecycle {
     toIssue.setAssigneeUuid(fromIssue.assignee());
     toIssue.setAuthorLogin(fromIssue.authorLogin());
     toIssue.setTags(fromIssue.tags());
-    toIssue.setAttributes(fromIssue.attributes());
     toIssue.setEffort(debtCalculator.calculate(toIssue));
     toIssue.setOnDisabledRule(fromIssue.isOnDisabledRule());
     toIssue.setSelectedAt(fromIssue.selectedAt());

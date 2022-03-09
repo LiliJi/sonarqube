@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -84,6 +84,11 @@ public class MockUserSession extends AbstractMockUserSession<MockUserSession> {
   @Override
   public boolean isRoot() {
     return root;
+  }
+
+  @Override
+  public boolean isActive() {
+    return true;
   }
 
   public void setRoot(boolean root) {

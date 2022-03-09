@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -199,7 +199,7 @@ export default class Sidebar extends React.PureComponent<Props, State> {
           {this.state.loaded && !isOnCurrentVersion && !isOnLTSVersion && (
             <div className="alert alert-warning">
               This is an archived version of the doc for <b>SonarQube version {version}</b>.{' '}
-              <a href="/">See Documentation</a> for current functionnality.
+              <a href="/">See Documentation</a> for current functionality.
             </div>
           )}
         </div>

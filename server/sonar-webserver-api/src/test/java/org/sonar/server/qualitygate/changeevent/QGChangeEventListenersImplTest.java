@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -167,7 +167,7 @@ public class QGChangeEventListenersImplTest {
 
   @Test
   public void broadcastOnIssueChange_has_no_effect_when_no_listener() {
-    QGChangeEventListenersImpl underTest = new QGChangeEventListenersImpl();
+    QGChangeEventListenersImpl underTest = new QGChangeEventListenersImpl(null);
 
     underTest.broadcastOnIssueChange(oneIssueOnComponent1, singletonList(component1QGChangeEvent));
 

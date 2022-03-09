@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -78,6 +78,16 @@ public class ServletResponse implements Response {
 
     public ServletStream reset() {
       response.reset();
+      return this;
+    }
+
+    public ServletStream flushBuffer() throws IOException {
+      response.flushBuffer();
+      return this;
+    }
+
+    public ServletStream setCharacterEncoding(String charset) {
+      response.setCharacterEncoding(charset);
       return this;
     }
   }

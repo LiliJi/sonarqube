@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,20 +20,14 @@
 import { combineReducers } from 'redux';
 import settingsApp, * as fromSettingsApp from '../apps/settings/store/rootReducer';
 import { BranchLike } from '../types/branch-like';
-import { AppState, CurrentUserSettingNames, Languages } from '../types/types';
-import appState from './appState';
+import { CurrentUserSettingNames } from '../types/types';
 import branches, * as fromBranches from './branches';
 import globalMessages, * as fromGlobalMessages from './globalMessages';
-import languages, * as fromLanguages from './languages';
-import metrics, * as fromMetrics from './metrics';
 import users, * as fromUsers from './users';
 
 export type Store = {
-  appState: AppState;
   branches: fromBranches.State;
   globalMessages: fromGlobalMessages.State;
-  languages: Languages;
-  metrics: fromMetrics.State;
   users: fromUsers.State;
 
   // apps
@@ -41,27 +35,16 @@ export type Store = {
 };
 
 export default combineReducers<Store>({
-  appState,
   branches,
   globalMessages,
-  languages,
-  metrics,
   users,
 
   // apps
   settingsApp
 });
 
-export function getAppState(state: Store) {
-  return state.appState;
-}
-
 export function getGlobalMessages(state: Store) {
   return fromGlobalMessages.getGlobalMessages(state.globalMessages);
-}
-
-export function getLanguages(state: Store) {
-  return fromLanguages.getLanguages(state.languages);
 }
 
 export function getCurrentUserSetting(state: Store, key: CurrentUserSettingNames) {
@@ -72,56 +55,8 @@ export function getCurrentUser(state: Store) {
   return fromUsers.getCurrentUser(state.users);
 }
 
-export function getMetrics(state: Store) {
-  return fromMetrics.getMetrics(state.metrics);
-}
-
-export function getMetricsKey(state: Store) {
-  return fromMetrics.getMetricsKey(state.metrics);
-}
-
-export function getMetricByKey(state: Store, key: string) {
-  return fromMetrics.getMetricByKey(state.metrics, key);
-}
-
 export function getGlobalSettingValue(state: Store, key: string) {
   return fromSettingsApp.getValue(state.settingsApp, key);
-}
-
-export function getSettingsAppAllDefinitions(state: Store) {
-  return fromSettingsApp.getAllDefinitions(state.settingsApp);
-}
-
-export function getSettingsAppDefinition(state: Store, key: string) {
-  return fromSettingsApp.getDefinition(state.settingsApp, key);
-}
-
-export function getSettingsAppAllCategories(state: Store) {
-  return fromSettingsApp.getAllCategories(state.settingsApp);
-}
-
-export function getSettingsAppDefaultCategory(state: Store) {
-  return fromSettingsApp.getDefaultCategory(state.settingsApp);
-}
-
-export function getSettingsAppSettingsForCategory(
-  state: Store,
-  category: string,
-  component?: string
-) {
-  return fromSettingsApp.getSettingsForCategory(state.settingsApp, category, component);
-}
-
-export function getSettingsAppChangedValue(state: Store, key: string) {
-  return fromSettingsApp.getChangedValue(state.settingsApp, key);
-}
-
-export function isSettingsAppLoading(state: Store, key: string) {
-  return fromSettingsApp.isLoading(state.settingsApp, key);
-}
-
-export function getSettingsAppValidationMessage(state: Store, key: string) {
-  return fromSettingsApp.getValidationMessage(state.settingsApp, key);
 }
 
 export function getBranchStatusByBranchLike(

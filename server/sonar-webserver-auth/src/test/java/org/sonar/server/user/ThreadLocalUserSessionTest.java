@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -69,6 +69,7 @@ public class ThreadLocalUserSessionTest {
     assertThat(threadLocalUserSession.getLogin()).isEqualTo("karadoc");
     assertThat(threadLocalUserSession.getUuid()).isEqualTo("karadoc-uuid");
     assertThat(threadLocalUserSession.isLoggedIn()).isTrue();
+    assertThat(threadLocalUserSession.isActive()).isTrue();
     assertThat(threadLocalUserSession.shouldResetPassword()).isTrue();
     assertThat(threadLocalUserSession.getGroups()).extracting(GroupDto::getUuid).containsOnly(group.getUuid());
     assertThat(threadLocalUserSession.hasChildProjectsPermission(USER, new ComponentDto())).isFalse();

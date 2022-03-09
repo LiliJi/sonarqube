@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -32,10 +32,10 @@ import org.sonar.server.plugins.DetectPluginChange;
 import org.sonar.server.plugins.PluginConsentVerifier;
 import org.sonar.server.qualitygate.ProjectsInWarningDaemon;
 import org.sonar.server.qualitygate.RegisterQualityGates;
-import org.sonar.server.qualityprofile.BuiltInQProfileInsertImpl;
-import org.sonar.server.qualityprofile.BuiltInQProfileLoader;
-import org.sonar.server.qualityprofile.BuiltInQProfileUpdateImpl;
-import org.sonar.server.qualityprofile.BuiltInQualityProfilesUpdateListener;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileInsertImpl;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileLoader;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileUpdateImpl;
+import org.sonar.server.qualityprofile.builtin.BuiltInQualityProfilesUpdateListener;
 import org.sonar.server.qualityprofile.RegisterQualityProfiles;
 import org.sonar.server.rule.RegisterRules;
 import org.sonar.server.rule.WebServerRuleFinder;
@@ -100,9 +100,9 @@ public class PlatformLevelStartup extends PlatformLevel {
   }
 
   private boolean anyPluginChanged() {
-    return getOptional(DetectPluginChange.class)
+    return parent.getOptional(DetectPluginChange.class)
       .map(DetectPluginChange::anyPluginChanged)
-      .orElseThrow(() -> new IllegalStateException("DetectPluginChange not available in Pico yet"));
+      .orElseThrow(() -> new IllegalStateException("DetectPluginChange not available in the container yet"));
   }
 
   public final class AddIfStartupLeaderAndPluginsChanged extends AddIf {
@@ -113,7 +113,7 @@ public class PlatformLevelStartup extends PlatformLevel {
 
   @Override
   public PlatformLevel start() {
-    DoPrivileged.execute(new DoPrivileged.Task(get(ThreadLocalUserSession.class)) {
+    DoPrivileged.execute(new DoPrivileged.Task(parent.get(ThreadLocalUserSession.class)) {
       @Override
       protected void doPrivileged() {
         PlatformLevelStartup.super.start();

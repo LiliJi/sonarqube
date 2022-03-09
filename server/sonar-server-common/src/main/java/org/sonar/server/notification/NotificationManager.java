@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * The notification manager receives notifications and is in charge of storing them so that they are processed by the notification service.
  * <p>
- * Pico provides an instance of this class, and plugins just need to create notifications and pass them to this manager with
+ * The ioc container provides an instance of this class, and plugins just need to create notifications and pass them to this manager with
  * the {@link NotificationManager#scheduleForSending(Notification)} method.
  * </p>
  */

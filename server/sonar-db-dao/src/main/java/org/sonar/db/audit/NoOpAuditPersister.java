@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
  */
 package org.sonar.db.audit;
 
+import javax.annotation.Priority;
 import org.sonar.db.DbSession;
 import org.sonar.db.audit.model.ComponentKeyNewValue;
 import org.sonar.db.audit.model.ComponentNewValue;
@@ -38,6 +39,7 @@ import org.sonar.db.audit.model.UserPermissionNewValue;
 import org.sonar.db.audit.model.UserTokenNewValue;
 import org.sonar.db.audit.model.WebhookNewValue;
 
+@Priority(2)
 public class NoOpAuditPersister implements AuditPersister {
   @Override
   public void addUserGroup(DbSession dbSession, UserGroupNewValue newValue) {

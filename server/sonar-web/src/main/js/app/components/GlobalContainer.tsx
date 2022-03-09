@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,10 +22,12 @@ import Workspace from '../../components/workspace/Workspace';
 import A11yProvider from './a11y/A11yProvider';
 import A11ySkipLinks from './a11y/A11ySkipLinks';
 import SuggestionsProvider from './embed-docs-modal/SuggestionsProvider';
-import GlobalFooterContainer from './GlobalFooterContainer';
+import GlobalFooter from './GlobalFooter';
 import GlobalMessagesContainer from './GlobalMessagesContainer';
 import IndexationContextProvider from './indexation/IndexationContextProvider';
 import IndexationNotification from './indexation/IndexationNotification';
+import LanguagesContextProvider from './languages/LanguagesContextProvider';
+import MetricsContextProvider from './metrics/MetricsContextProvider';
 import GlobalNav from './nav/global/GlobalNav';
 import PromotionNotification from './promotion-notification/PromotionNotification';
 import StartupModal from './StartupModal';
@@ -39,23 +41,26 @@ export interface Props {
 
 export default function GlobalContainer(props: Props) {
   // it is important to pass `location` down to `GlobalNav` to trigger render on url change
-  const { footer = <GlobalFooterContainer /> } = props;
+  const { footer = <GlobalFooter /> } = props;
   return (
     <SuggestionsProvider>
       <A11yProvider>
         <StartupModal>
           <A11ySkipLinks />
-
           <div className="global-container">
             <div className="page-wrapper" id="container">
               <div className="page-container">
                 <Workspace>
                   <IndexationContextProvider>
-                    <GlobalNav location={props.location} />
-                    <GlobalMessagesContainer />
-                    <IndexationNotification />
-                    <UpdateNotification dismissable={true} />
-                    {props.children}
+                    <LanguagesContextProvider>
+                      <MetricsContextProvider>
+                        <GlobalNav location={props.location} />
+                        <GlobalMessagesContainer />
+                        <IndexationNotification />
+                        <UpdateNotification dismissable={true} />
+                        {props.children}
+                      </MetricsContextProvider>
+                    </LanguagesContextProvider>
                   </IndexationContextProvider>
                 </Workspace>
               </div>

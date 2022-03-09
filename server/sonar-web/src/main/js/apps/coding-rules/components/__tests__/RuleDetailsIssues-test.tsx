@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,6 +20,7 @@
 import { shallow } from 'enzyme';
 import * as React from 'react';
 import { getFacet } from '../../../../api/issues';
+import { mockAppState } from '../../../../helpers/testMocks';
 import { waitAndUpdate } from '../../../../helpers/testUtils';
 import { RuleDetailsIssues } from '../RuleDetailsIssues';
 
@@ -59,7 +60,7 @@ it('should fetch issues and render', async () => {
 function shallowRender(props: Partial<RuleDetailsIssues['props']> = {}) {
   return shallow(
     <RuleDetailsIssues
-      appState={{ branchesEnabled: false }}
+      appState={mockAppState({ branchesEnabled: false })}
       ruleDetails={{ key: 'foo', type: 'BUG' }}
       {...props}
     />

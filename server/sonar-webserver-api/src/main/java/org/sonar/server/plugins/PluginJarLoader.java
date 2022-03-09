@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -50,6 +50,8 @@ import static org.sonar.server.log.ServerProcessLogging.STARTUP_LOGGER_NAME;
 import static org.sonar.server.plugins.PluginType.BUNDLED;
 import static org.sonar.server.plugins.PluginType.EXTERNAL;
 
+import javax.inject.Inject;
+
 public class PluginJarLoader {
   private static final Logger LOG = Loggers.get(PluginJarLoader.class);
 
@@ -65,6 +67,7 @@ public class PluginJarLoader {
   private final SonarRuntime runtime;
   private final Set<String> blacklistedPluginKeys;
 
+  @Inject
   public PluginJarLoader(ServerFileSystem fs, SonarRuntime runtime) {
     this(fs, runtime, DEFAULT_BLACKLISTED_PLUGINS);
   }

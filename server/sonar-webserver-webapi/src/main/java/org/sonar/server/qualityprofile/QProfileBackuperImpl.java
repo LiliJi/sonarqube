@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -43,6 +43,7 @@ import org.sonar.db.qualityprofile.ExportRuleParamDto;
 import org.sonar.db.qualityprofile.QProfileDto;
 import org.sonar.db.rule.DeprecatedRuleKeyDto;
 import org.sonar.db.rule.RuleDefinitionDto;
+import org.sonar.server.qualityprofile.builtin.QProfileName;
 import org.sonar.server.rule.NewCustomRule;
 import org.sonar.server.rule.RuleCreator;
 

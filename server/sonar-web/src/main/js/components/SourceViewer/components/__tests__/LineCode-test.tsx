@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,16 @@ import LineCode from '../LineCode';
 
 it('render code', () => {
   expect(shallowRender()).toMatchSnapshot();
+  expect(shallowRender({ additionalChild: <div>additional child</div> })).toMatchSnapshot(
+    'with additional child'
+  );
+  expect(
+    shallowRender({
+      secondaryIssueLocations: [
+        { index: 1, from: 5, to: 6, line: 16, startLine: 16, text: 'secondary-location-msg' }
+      ]
+    })
+  ).toMatchSnapshot('with secondary location');
 });
 
 function shallowRender(props: Partial<LineCode['props']> = {}) {

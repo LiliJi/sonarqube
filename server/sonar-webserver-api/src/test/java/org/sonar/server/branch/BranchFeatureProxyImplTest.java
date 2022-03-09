@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ public class BranchFeatureProxyImplTest {
 
   @Test
   public void return_false_when_no_extension() {
-    assertThat(new BranchFeatureProxyImpl().isEnabled()).isFalse();
+    assertThat(new BranchFeatureProxyImpl(null).isEnabled()).isFalse();
   }
 
   @Test

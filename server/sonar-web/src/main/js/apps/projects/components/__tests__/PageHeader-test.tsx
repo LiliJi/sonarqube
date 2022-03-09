@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -37,23 +37,11 @@ it('should not render projects total', () => {
   ).toBe(false);
 });
 
-it('should render disabled sorting options for visualizations', () => {
-  expect(
-    shallowRender({
-      open: true,
-      total: undefined,
-      view: 'visualizations',
-      visualization: 'coverage'
-    })
-  ).toMatchSnapshot();
-});
-
 it('should render switch the default sorting option for anonymous users', () => {
   expect(
     shallowRender({
       currentUser: { isLoggedIn: true },
-      open: true,
-      visualization: 'risk'
+      open: true
     }).find('ProjectsSortingSelect')
   ).toMatchSnapshot();
 
@@ -61,8 +49,7 @@ it('should render switch the default sorting option for anonymous users', () => 
     shallowRender({
       currentUser: { isLoggedIn: false },
       open: true,
-      view: 'leak',
-      visualization: 'risk'
+      view: 'leak'
     }).find('ProjectsSortingSelect')
   ).toMatchSnapshot();
 });
@@ -75,7 +62,6 @@ function shallowRender(props?: {}) {
       onPerspectiveChange={jest.fn()}
       onQueryChange={jest.fn()}
       onSortChange={jest.fn()}
-      projects={[]}
       query={{ search: 'test' }}
       selectedSort="size"
       total={12}

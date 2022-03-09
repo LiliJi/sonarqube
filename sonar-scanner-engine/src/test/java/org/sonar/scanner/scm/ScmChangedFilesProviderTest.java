@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -132,13 +132,6 @@ public class ScmChangedFilesProviderTest {
 
     assertThat(scmChangedFiles.get()).containsOnly(Paths.get("changedFile").toAbsolutePath());
     verify(scmProvider).branchChangedFiles("target", rootBaseDir);
-  }
-
-  @Test
-  public void testCacheObject() {
-    provider.provide(scmConfiguration, branchConfiguration, project);
-    provider.provide(scmConfiguration, branchConfiguration, project);
-    verify(branchConfiguration).isPullRequest();
   }
 
 }

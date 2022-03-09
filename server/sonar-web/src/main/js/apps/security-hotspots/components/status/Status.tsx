@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import classNames from 'classnames';
 import * as React from 'react';
 import { Button } from '../../../../components/controls/buttons';
 import { DropdownOverlay } from '../../../../components/controls/Dropdown';
@@ -49,13 +48,13 @@ export function Status(props: StatusProps) {
   const readonly = !hotspot.canChangeStatus || !isLoggedIn(currentUser);
 
   return (
-    <div>
+    <div className="display-flex-row display-flex-end">
       <StatusDescription showTitle={true} statusOption={statusOption} />
       <div className="spacer-top">
         <Tooltip
           overlay={readonly ? translate('hotspots.status.cannot_change_status') : null}
           placement="bottom">
-          <div className="dropdown display-inline-block">
+          <div className="dropdown">
             <Toggler
               closeOnClickOutside={true}
               closeOnEscape={true}
@@ -73,7 +72,7 @@ export function Status(props: StatusProps) {
                 </DropdownOverlay>
               }>
               <Button
-                className={classNames('dropdown-toggle')}
+                className="dropdown-toggle big-spacer-left"
                 id="status-trigger"
                 onClick={() => setIsOpen(true)}
                 disabled={readonly}>

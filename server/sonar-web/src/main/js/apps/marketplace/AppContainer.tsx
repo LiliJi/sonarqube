@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,38 +20,55 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import AdminContext from '../../app/components/AdminContext';
-import { getAppState, getGlobalSettingValue, Store } from '../../store/rootReducer';
+import withAppStateContext from '../../app/components/app-state/withAppStateContext';
+import { getGlobalSettingValue, Store } from '../../store/rootReducer';
 import { EditionKey } from '../../types/editions';
-import { RawQuery } from '../../types/types';
+import { AppState, RawQuery } from '../../types/types';
+import { fetchValues } from '../settings/store/actions';
 import App from './App';
 
 interface OwnProps {
   location: { pathname: string; query: RawQuery };
+  appState: AppState;
 }
 
 interface StateToProps {
-  currentEdition?: EditionKey;
-  standaloneMode?: boolean;
+  fetchValues: typeof fetchValues;
   updateCenterActive: boolean;
 }
 
-const mapStateToProps = (state: Store) => {
-  const updateCenterActive = getGlobalSettingValue(state, 'sonar.updatecenter.activate');
-  return {
-    currentEdition: getAppState(state).edition as EditionKey, // TODO: Fix once AppState is no longer ambiant.
-    standaloneMode: getAppState(state).standalone,
-    updateCenterActive: Boolean(updateCenterActive && updateCenterActive.value === 'true')
-  };
-};
-
 function WithAdminContext(props: StateToProps & OwnProps) {
+  React.useEffect(() => {
+    props.fetchValues(['sonar.updatecenter.activate']);
+  });
+
+  const propsToPass = {
+    location: props.location,
+    updateCenterActive: props.updateCenterActive,
+    currentEdition: props.appState.edition as EditionKey,
+    standaloneMode: props.appState.standalone
+  };
+
   return (
     <AdminContext.Consumer>
       {({ fetchPendingPlugins, pendingPlugins }) => (
-        <App fetchPendingPlugins={fetchPendingPlugins} pendingPlugins={pendingPlugins} {...props} />
+        <App
+          fetchPendingPlugins={fetchPendingPlugins}
+          pendingPlugins={pendingPlugins}
+          {...propsToPass}
+        />
       )}
     </AdminContext.Consumer>
   );
 }
 
-export default connect(mapStateToProps)(WithAdminContext);
+const mapDispatchToProps = { fetchValues };
+
+const mapStateToProps = (state: Store) => {
+  const updateCenterActive = getGlobalSettingValue(state, 'sonar.updatecenter.activate');
+  return {
+    updateCenterActive: Boolean(updateCenterActive && updateCenterActive.value === 'true')
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(withAppStateContext(WithAdminContext));

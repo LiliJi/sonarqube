@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,9 +17,9 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 /* eslint-disable no-await-in-loop */
 
+import { setImmediate } from 'timers';
 import { Dict } from '../../types/types';
 import handleRequiredAuthentication from '../handleRequiredAuthentication';
 import {
@@ -203,7 +203,14 @@ describe('post', () => {
 });
 
 describe('requestTryAndRepeatUntil', () => {
-  jest.useFakeTimers();
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
+  afterAll(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
 
   beforeEach(() => {
     jest.clearAllTimers();
@@ -283,7 +290,11 @@ describe('requestTryAndRepeatUntil', () => {
   it('should slow down after 2 calls', async () => {
     const apiCall = jest.fn().mockResolvedValue({});
     const stopRepeat = jest.fn().mockReturnValue(false);
-    requestTryAndRepeatUntil(apiCall, { max: 5, slowThreshold: 3 }, stopRepeat);
+    const promiseResult = requestTryAndRepeatUntil(
+      apiCall,
+      { max: 5, slowThreshold: 3 },
+      stopRepeat
+    );
 
     for (let i = 1; i < 3; i++) {
       jest.advanceTimersByTime(500);
@@ -301,6 +312,12 @@ describe('requestTryAndRepeatUntil', () => {
 
     jest.advanceTimersByTime(3000);
     expect(apiCall).toBeCalledTimes(4);
+
+    await new Promise(setImmediate);
+    jest.runAllTimers();
+    expect(apiCall).toBeCalledTimes(5);
+
+    await expect(promiseResult).rejects.toBeUndefined();
   });
 });
 

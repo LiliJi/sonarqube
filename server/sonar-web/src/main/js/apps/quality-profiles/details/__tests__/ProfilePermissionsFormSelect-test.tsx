@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -52,8 +52,13 @@ it('searches', () => {
   onSearch.mockClear();
 
   wrapper.prop<Function>('onInputChange')('f');
-  expect(onSearch).not.toBeCalled();
+  expect(onSearch).toBeCalled();
 
   wrapper.prop<Function>('onInputChange')('foo');
   expect(onSearch).toBeCalledWith('foo');
+
+  onSearch.mockClear();
+
+  wrapper.prop<Function>('onInputChange')('foo');
+  expect(onSearch).not.toBeCalled();
 });

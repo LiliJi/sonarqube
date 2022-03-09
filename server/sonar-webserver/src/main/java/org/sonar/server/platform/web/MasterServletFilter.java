@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -57,7 +57,7 @@ public class MasterServletFilter implements Filter {
 
   @Override
   public void init(FilterConfig config) {
-    // Filters are already available in picocontainer unless a database migration is required. See
+    // Filters are already available in the container unless a database migration is required. See
     // org.sonar.server.startup.RegisterServletFilters.
     init(config, PlatformImpl.getInstance().getContainer().getComponentsByType(ServletFilter.class));
   }

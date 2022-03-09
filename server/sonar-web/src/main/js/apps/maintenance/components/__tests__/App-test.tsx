@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -28,7 +28,14 @@ jest.mock('../../../../api/system', () => ({
   migrateDatabase: jest.fn()
 }));
 
-jest.useFakeTimers();
+beforeAll(() => {
+  jest.useFakeTimers();
+});
+
+afterAll(() => {
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
+});
 
 const getMigrationStatus = require('../../../../api/system').getMigrationStatus as jest.Mock;
 const getSystemStatus = require('../../../../api/system').getSystemStatus as jest.Mock;

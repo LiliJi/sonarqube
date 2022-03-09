@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -39,10 +39,10 @@ it('should correctly handle a metric selection', () => {
   const wrapper = shallowRender();
   const metric = mockMetric();
 
-  expect(wrapper.find('MetricSelect').prop('metric')).toBeUndefined();
+  expect(wrapper.find('withMetricsContext(MetricSelectComponent)').prop('metric')).toBeUndefined();
 
   wrapper.instance().handleMetricChange(metric);
-  expect(wrapper.find('MetricSelect').prop('metric')).toEqual(metric);
+  expect(wrapper.find('withMetricsContext(MetricSelectComponent)').prop('metric')).toEqual(metric);
 });
 
 it('should correctly switch scope', () => {

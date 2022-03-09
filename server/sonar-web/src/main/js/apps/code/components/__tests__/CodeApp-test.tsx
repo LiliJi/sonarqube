@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -268,7 +268,6 @@ function shallowRender(props: Partial<CodeApp['props']> = {}) {
         qualifier: 'FOO'
       }}
       fetchBranchStatus={jest.fn()}
-      fetchMetrics={jest.fn()}
       location={{ query: { branch: 'b', id: 'foo', line: '7' } }}
       metrics={METRICS}
       router={mockRouter()}

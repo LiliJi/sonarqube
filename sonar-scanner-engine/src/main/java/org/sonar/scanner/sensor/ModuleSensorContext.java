@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -28,15 +28,16 @@ import org.sonar.api.batch.rule.ActiveRules;
 import org.sonar.api.batch.sensor.internal.SensorStorage;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.config.Settings;
+import org.sonar.scanner.scan.branch.BranchConfiguration;
 
 @ThreadSafe
 public class ModuleSensorContext extends ProjectSensorContext {
 
   private final InputModule module;
 
-  public ModuleSensorContext(DefaultInputProject project, InputModule module, Configuration config, Settings mutableSettings, FileSystem fs, ActiveRules activeRules,
-    SensorStorage sensorStorage, SonarRuntime sonarRuntime) {
-    super(project, config, mutableSettings, fs, activeRules, sensorStorage, sonarRuntime);
+  public ModuleSensorContext(DefaultInputProject project, InputModule module, Configuration config, Settings mutableModuleSettings, FileSystem fs, ActiveRules activeRules,
+    SensorStorage sensorStorage, SonarRuntime sonarRuntime, BranchConfiguration branchConfiguration) {
+    super(project, config, mutableModuleSettings, fs, activeRules, sensorStorage, sonarRuntime, branchConfiguration);
     this.module = module;
   }
 

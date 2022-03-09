@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -45,6 +45,16 @@ import org.sonar.db.qualityprofile.ActiveRuleDto;
 import org.sonar.db.qualityprofile.QProfileDto;
 import org.sonar.db.qualityprofile.RulesProfileDto;
 import org.sonar.db.rule.RuleDefinitionDto;
+import org.sonar.server.pushapi.qualityprofile.QualityProfileChangeEventService;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfile;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileInsert;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileInsertImpl;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileRepositoryRule;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileUpdate;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileUpdateImpl;
+import org.sonar.server.qualityprofile.builtin.BuiltInQualityProfilesUpdateListener;
+import org.sonar.server.qualityprofile.builtin.QProfileName;
+import org.sonar.server.qualityprofile.builtin.RuleActivator;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 import org.sonar.server.rule.DefaultRuleFinder;
 import org.sonar.server.rule.ServerRuleFinder;
@@ -90,12 +100,13 @@ public class RegisterQualityProfilesNotificationTest {
   private DbClient dbClient = db.getDbClient();
   private TypeValidations typeValidations = mock(TypeValidations.class);
   private ActiveRuleIndexer activeRuleIndexer = mock(ActiveRuleIndexer.class);
+  private QualityProfileChangeEventService qualityProfileChangeEventService = mock(QualityProfileChangeEventService.class);
   private ServerRuleFinder ruleFinder = new DefaultRuleFinder(dbClient);
   private BuiltInQProfileInsert builtInQProfileInsert = new BuiltInQProfileInsertImpl(dbClient, ruleFinder, system2, UuidFactoryFast.getInstance(),
     typeValidations, activeRuleIndexer);
   private RuleActivator ruleActivator = new RuleActivator(system2, dbClient, typeValidations, userSessionRule);
-  private QProfileRules qProfileRules = new QProfileRulesImpl(dbClient, ruleActivator, mock(RuleIndex.class), activeRuleIndexer);
-  private BuiltInQProfileUpdate builtInQProfileUpdate = new BuiltInQProfileUpdateImpl(dbClient, ruleActivator, activeRuleIndexer);
+  private QProfileRules qProfileRules = new QProfileRulesImpl(dbClient, ruleActivator, mock(RuleIndex.class), activeRuleIndexer, qualityProfileChangeEventService);
+  private BuiltInQProfileUpdate builtInQProfileUpdate = new BuiltInQProfileUpdateImpl(dbClient, ruleActivator, activeRuleIndexer, qualityProfileChangeEventService);
   private BuiltInQualityProfilesUpdateListener builtInQualityProfilesNotification = mock(BuiltInQualityProfilesUpdateListener.class);
   private RegisterQualityProfiles underTest = new RegisterQualityProfiles(builtInQProfileRepositoryRule, dbClient,
     builtInQProfileInsert, builtInQProfileUpdate, builtInQualityProfilesNotification, system2);

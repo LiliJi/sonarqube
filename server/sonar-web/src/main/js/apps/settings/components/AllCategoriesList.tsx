@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,17 +20,16 @@
 import classNames from 'classnames';
 import { sortBy } from 'lodash';
 import * as React from 'react';
-import { connect } from 'react-redux';
 import { IndexLink } from 'react-router';
+import withAppStateContext from '../../../app/components/app-state/withAppStateContext';
 import { getGlobalSettingsUrl, getProjectSettingsUrl } from '../../../helpers/urls';
-import { getAppState, getSettingsAppAllCategories, Store } from '../../../store/rootReducer';
-import { Component } from '../../../types/types';
+import { AppState, Component } from '../../../types/types';
 import { getCategoryName } from '../utils';
 import { ADDITIONAL_CATEGORIES } from './AdditionalCategories';
 import CATEGORY_OVERRIDES from './CategoryOverrides';
 
 export interface CategoriesListProps {
-  branchesEnabled?: boolean;
+  appState: AppState;
   categories: string[];
   component?: Component;
   defaultCategory: string;
@@ -38,7 +37,7 @@ export interface CategoriesListProps {
 }
 
 export function CategoriesList(props: CategoriesListProps) {
-  const { branchesEnabled, categories, component, defaultCategory, selectedCategory } = props;
+  const { appState, categories, component, defaultCategory, selectedCategory } = props;
 
   const categoriesWithName = categories
     .filter(key => !CATEGORY_OVERRIDES[key.toLowerCase()])
@@ -55,7 +54,7 @@ export function CategoriesList(props: CategoriesListProps) {
             : // Global settings
               c.availableGlobally
         )
-        .filter(c => branchesEnabled || !c.requiresBranchesEnabled)
+        .filter(c => appState.branchesEnabled || !c.requiresBranchesEnabled)
     );
   const sortedCategories = sortBy(categoriesWithName, category => category.name.toLowerCase());
 
@@ -84,9 +83,4 @@ export function CategoriesList(props: CategoriesListProps) {
   );
 }
 
-const mapStateToProps = (state: Store) => ({
-  categories: getSettingsAppAllCategories(state),
-  branchesEnabled: getAppState(state).branchesEnabled
-});
-
-export default connect(mapStateToProps)(CategoriesList);
+export default withAppStateContext(CategoriesList);

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -36,6 +36,7 @@ public class ActivityRequest {
   private String maxExecutedAt;
   private String minSubmittedAt;
   private String onlyCurrents;
+  private String p;
   private String ps;
   private String q;
   private List<String> status;
@@ -105,6 +106,18 @@ public class ActivityRequest {
 
   public String getOnlyCurrents() {
     return onlyCurrents;
+  }
+
+  /**
+   * Example value: "1"
+   */
+  public ActivityRequest setP(String p) {
+    this.p = p;
+    return this;
+  }
+
+  public String getP() {
+    return p;
   }
 
   /**

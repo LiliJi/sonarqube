@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@ package org.sonar.scanner.sensor;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import org.sonar.api.batch.sensor.Sensor;
-import org.sonar.core.platform.ComponentContainer;
+import org.sonar.core.platform.ExtensionContainer;
 import org.sonar.scanner.bootstrap.AbstractExtensionDictionary;
 import org.sonar.scanner.scan.branch.BranchConfiguration;
 import org.sonar.scanner.scan.filesystem.MutableFileSystem;
@@ -34,7 +34,7 @@ public class ModuleSensorExtensionDictionary extends AbstractExtensionDictionary
   private final MutableFileSystem fileSystem;
   private final BranchConfiguration branchConfiguration;
 
-  public ModuleSensorExtensionDictionary(ComponentContainer componentContainer, ModuleSensorContext sensorContext, ModuleSensorOptimizer sensorOptimizer,
+  public ModuleSensorExtensionDictionary(ExtensionContainer componentContainer, ModuleSensorContext sensorContext, ModuleSensorOptimizer sensorOptimizer,
     MutableFileSystem fileSystem, BranchConfiguration branchConfiguration) {
     super(componentContainer);
     this.sensorContext = sensorContext;

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -65,15 +65,5 @@ public class ScannerWsClientProviderTest {
     HttpConnector httpConnector = (HttpConnector) client.wsConnector();
     assertThat(httpConnector.baseUrl()).isEqualTo("https://here/sonarqube/");
     assertThat(httpConnector.okHttpClient().proxy()).isNull();
-  }
-
-  @Test
-  public void build_singleton() {
-    System2 system = mock(System2.class);
-
-    ScannerProperties settings = new ScannerProperties(new HashMap<>());
-    DefaultScannerWsClient first = underTest.provide(settings, env, new GlobalAnalysisMode(new ScannerProperties(Collections.emptyMap())), system);
-    DefaultScannerWsClient second = underTest.provide(settings, env, new GlobalAnalysisMode(new ScannerProperties(Collections.emptyMap())), system);
-    assertThat(first).isSameAs(second);
   }
 }

@@ -3,7 +3,7 @@
 exports[`should render correctly 1`] = `
 <SuggestionsProvider>
   <A11yProvider>
-    <Connect(withRouter(StartupModal))>
+    <Connect(withRouter(withAppStateContext(StartupModal)))>
       <A11ySkipLinks />
       <div
         className="global-container"
@@ -16,34 +16,38 @@ exports[`should render correctly 1`] = `
             className="page-container"
           >
             <Workspace>
-              <Connect(withAppState(IndexationContextProvider))>
-                <Connect(GlobalNav)
-                  location={
-                    Object {
-                      "action": "PUSH",
-                      "hash": "",
-                      "key": "key",
-                      "pathname": "/path",
-                      "query": Object {},
-                      "search": "",
-                      "state": Object {},
-                    }
-                  }
-                />
-                <Connect(GlobalMessages) />
-                <Connect(withCurrentUser(withIndexationContext(IndexationNotification))) />
-                <Connect(withCurrentUser(Connect(withAppState(UpdateNotification))))
-                  dismissable={true}
-                />
-                <ChildComponent />
-              </Connect(withAppState(IndexationContextProvider))>
+              <withAppStateContext(IndexationContextProvider)>
+                <LanguagesContextProvider>
+                  <MetricsContextProvider>
+                    <Connect(GlobalNav)
+                      location={
+                        Object {
+                          "action": "PUSH",
+                          "hash": "",
+                          "key": "key",
+                          "pathname": "/path",
+                          "query": Object {},
+                          "search": "",
+                          "state": Object {},
+                        }
+                      }
+                    />
+                    <Connect(GlobalMessages) />
+                    <Connect(withCurrentUser(withIndexationContext(IndexationNotification))) />
+                    <Connect(withCurrentUser(withAppStateContext(UpdateNotification)))
+                      dismissable={true}
+                    />
+                    <ChildComponent />
+                  </MetricsContextProvider>
+                </LanguagesContextProvider>
+              </withAppStateContext(IndexationContextProvider)>
             </Workspace>
           </div>
           <Connect(Connect(withCurrentUser(PromotionNotification))) />
         </div>
-        <Connect(GlobalFooter) />
+        <withAppStateContext(GlobalFooter) />
       </div>
-    </Connect(withRouter(StartupModal))>
+    </Connect(withRouter(withAppStateContext(StartupModal)))>
   </A11yProvider>
 </SuggestionsProvider>
 `;

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,14 @@ import { KeyboardCodes } from '../../../helpers/keycodes';
 import { keydown } from '../../../helpers/testUtils';
 import EscKeydownHandler from '../EscKeydownHandler';
 
-jest.useFakeTimers();
+beforeAll(() => {
+  jest.useFakeTimers();
+});
+
+afterAll(() => {
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
+});
 
 it('should render correctly', () => {
   expect(shallowRender()).toMatchSnapshot();

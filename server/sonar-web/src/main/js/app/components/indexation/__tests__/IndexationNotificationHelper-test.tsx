@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,6 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+import { setImmediate } from 'timers';
 import { getIndexationStatus } from '../../../../api/ce';
 import { get, remove, save } from '../../../../helpers/storage';
 import { IndexationStatus } from '../../../../types/indexation';
@@ -25,6 +26,11 @@ import IndexationNotificationHelper from '../IndexationNotificationHelper';
 beforeEach(() => {
   jest.clearAllMocks();
   jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
 });
 
 jest.mock('../../../../api/ce', () => ({

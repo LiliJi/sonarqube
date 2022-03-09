@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -50,6 +50,28 @@ it('should render correctly with no SCM', () => {
   });
 
   expect(wrapper).toMatchSnapshot();
+});
+
+it('should render additional child in line', () => {
+  const sourceline = mockSourceLine({ line: 42 });
+
+  const child = <div>child</div>;
+  const renderAdditionalChildInLine = jest.fn().mockReturnValue(child);
+  const wrapper = shallowRender({ renderAdditionalChildInLine, snippet: [sourceline] });
+
+  const renderedLine = wrapper.instance().renderLine({
+    displayDuplications: false,
+    index: 1,
+    issuesForLine: [],
+    issueLocations: [],
+    line: sourceline,
+    snippet: [sourceline],
+    symbols: [],
+    verticalBuffer: 5
+  });
+
+  expect(renderAdditionalChildInLine).toBeCalledWith(42);
+  expect(renderedLine.props.additionalChild).toBe(child);
 });
 
 it('should render correctly when at the top of the file', () => {

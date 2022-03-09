@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -33,7 +33,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import okhttp3.HttpUrl;
 import org.apache.commons.io.FileUtils;
-import org.picocontainer.Startable;
+import org.sonar.api.Startable;
 import org.sonar.api.platform.Server;
 import org.sonar.api.utils.MessageException;
 import org.sonar.api.utils.TempFolder;
@@ -97,13 +97,13 @@ public class ReportPublisher implements Startable {
     this.branchConfiguration = branchConfiguration;
     this.properties = properties;
     this.ceTaskReportDataHolder = ceTaskReportDataHolder;
+    this.reportDir = moduleHierarchy.root().getWorkDir().resolve("scanner-report");
+    this.writer = new ScannerReportWriter(reportDir.toFile());
+    this.reader = new ScannerReportReader(reportDir.toFile());
   }
 
   @Override
   public void start() {
-    reportDir = moduleHierarchy.root().getWorkDir().resolve("scanner-report");
-    writer = new ScannerReportWriter(reportDir.toFile());
-    reader = new ScannerReportReader(reportDir.toFile());
     contextPublisher.init(writer);
 
     if (!analysisMode.isMediumTest()) {
@@ -150,7 +150,7 @@ public class ReportPublisher implements Startable {
     if (analysisMode.isMediumTest()) {
       LOG.info("ANALYSIS SUCCESSFUL");
     } else if (!properties.shouldWaitForQualityGate()) {
-      LOG.info("ANALYSIS SUCCESSFUL, you can browse {}", ceTaskReportDataHolder.getDashboardUrl());
+      LOG.info("ANALYSIS SUCCESSFUL, you can find the results at: {}", ceTaskReportDataHolder.getDashboardUrl());
       LOG.info("Note that you will be able to access the updated dashboard once the server has processed the submitted analysis report");
       LOG.info("More about the report processing at {}", ceTaskReportDataHolder.getCeTaskUrl());
     }

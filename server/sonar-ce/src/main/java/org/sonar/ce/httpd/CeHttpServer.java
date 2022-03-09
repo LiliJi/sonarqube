@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import org.picocontainer.Startable;
+import org.sonar.api.Startable;
 import org.slf4j.LoggerFactory;
 import org.sonar.process.sharedmemoryfile.DefaultProcessCommands;
 

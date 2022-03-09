@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -154,7 +154,6 @@ function shallowRender(props: Partial<PRDecorationBindingRendererProps> = {}) {
       onSubmit={jest.fn()}
       updating={false}
       successfullyUpdated={false}
-      monorepoEnabled={false}
       checkingConfiguration={false}
       onCheckConfiguration={jest.fn()}
       isSysAdmin={false}

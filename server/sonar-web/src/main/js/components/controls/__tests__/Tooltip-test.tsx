@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -21,7 +21,15 @@ import { shallow } from 'enzyme';
 import * as React from 'react';
 import Tooltip, { TooltipInner, TooltipProps } from '../Tooltip';
 
-jest.useFakeTimers();
+beforeAll(() => {
+  jest.useFakeTimers();
+});
+
+afterAll(() => {
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
+});
+
 jest.mock('react-dom', () => {
   const actual = jest.requireActual('react-dom');
   return Object.assign({}, actual, {

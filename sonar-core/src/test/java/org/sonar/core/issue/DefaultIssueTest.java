@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -114,29 +114,6 @@ public class DefaultIssueTest {
     assertThat(issue.updateDate()).isNull();
     assertThat(issue.closeDate()).isNull();
     assertThat(issue.selectedAt()).isNull();
-  }
-
-  @Test
-  public void test_attributes() {
-    assertThat(issue.attribute("foo")).isNull();
-    issue.setAttribute("foo", "bar");
-    assertThat(issue.attribute("foo")).isEqualTo("bar");
-    issue.setAttribute("foo", "newbar");
-    assertThat(issue.attribute("foo")).isEqualTo("newbar");
-    issue.setAttribute("foo", null);
-    assertThat(issue.attribute("foo")).isNull();
-  }
-
-  @Test
-  public void setAttributes_should_not_clear_existing_values() {
-    issue.setAttributes(ImmutableMap.of("1", "one"));
-    assertThat(issue.attribute("1")).isEqualTo("one");
-
-    issue.setAttributes(ImmutableMap.of("2", "two"));
-    assertThat(issue.attributes()).containsOnly(entry("1", "one"), entry("2", "two"));
-
-    issue.setAttributes(null);
-    assertThat(issue.attributes()).containsOnly(entry("1", "one"), entry("2", "two"));
   }
 
   @Test

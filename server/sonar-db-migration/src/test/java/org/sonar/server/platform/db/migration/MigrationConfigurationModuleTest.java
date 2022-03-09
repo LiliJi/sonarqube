@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@
 package org.sonar.server.platform.db.migration;
 
 import org.junit.Test;
-import org.sonar.core.platform.ComponentContainer;
+import org.sonar.core.platform.ListContainer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,11 +29,11 @@ public class MigrationConfigurationModuleTest {
 
   @Test
   public void verify_component_count() {
-    ComponentContainer container = new ComponentContainer();
+    ListContainer container = new ListContainer();
 
     underTest.configure(container);
 
-    assertThat(container.getPicoContainer().getComponentAdapters()).isNotEmpty();
+    assertThat(container.getAddedObjects()).isNotEmpty();
   }
 
 }

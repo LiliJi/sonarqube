@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -28,12 +28,14 @@ import { mockProjectAlmBindingConfigurationErrors } from '../../../helpers/mocks
 import { mockBranch, mockMainBranch, mockPullRequest } from '../../../helpers/mocks/branch-like';
 import { mockComponent } from '../../../helpers/mocks/component';
 import { mockTask } from '../../../helpers/mocks/tasks';
+import { HttpStatus } from '../../../helpers/request';
 import { mockAppState, mockLocation, mockRouter } from '../../../helpers/testMocks';
 import { waitAndUpdate } from '../../../helpers/testUtils';
 import { AlmKeys } from '../../../types/alm-settings';
 import { ComponentQualifier } from '../../../types/component';
 import { TaskStatuses, TaskTypes } from '../../../types/tasks';
 import { Component } from '../../../types/types';
+import handleRequiredAuthorization from '../../utils/handleRequiredAuthorization';
 import { ComponentContainer } from '../ComponentContainer';
 import PageUnavailableDueToIndexation from '../indexation/PageUnavailableDueToIndexation';
 
@@ -78,10 +80,21 @@ jest.mock('../../../api/alm-settings', () => ({
 // mock this, because some of its children are using redux store
 jest.mock('../nav/component/ComponentNav', () => () => null);
 
+jest.mock('../../utils/handleRequiredAuthorization', () => ({
+  __esModule: true,
+  default: jest.fn()
+}));
+
 const Inner = () => <div />;
 
 beforeEach(() => {
+  jest.useFakeTimers();
   jest.clearAllMocks();
+});
+
+afterEach(() => {
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
 });
 
 it('changes component', () => {
@@ -121,7 +134,7 @@ it('loads the project binding, if any', async () => {
 
 it("doesn't load branches portfolio", async () => {
   const wrapper = shallowRender({ location: mockLocation({ query: { id: 'portfolioKey' } }) });
-  await new Promise(setImmediate);
+  await waitAndUpdate(wrapper);
   expect(getBranches).not.toBeCalled();
   expect(getPullRequests).not.toBeCalled();
   expect(getComponentData).toBeCalledWith({ component: 'portfolioKey', branch: undefined });
@@ -155,8 +168,8 @@ it('fetches status', async () => {
     component: {}
   });
 
-  shallowRender();
-  await new Promise(setImmediate);
+  const wrapper = shallowRender();
+  await waitAndUpdate(wrapper);
   expect(getTasksForComponent).toBeCalledWith('portfolioKey');
 });
 
@@ -193,7 +206,6 @@ it('filters correctly the pending tasks for a main branch', () => {
 });
 
 it('reload component after task progress finished', async () => {
-  jest.useFakeTimers();
   (getTasksForComponent as jest.Mock<any>)
     .mockResolvedValueOnce({
       queue: [{ id: 'foo', status: TaskStatuses.InProgress, type: TaskTypes.ViewRefresh }]
@@ -233,7 +245,6 @@ it('reload component after task progress finished', async () => {
 });
 
 it('reloads component after task progress finished, and moves straight to current', async () => {
-  jest.useFakeTimers();
   (getComponentData as jest.Mock<any>).mockResolvedValueOnce({
     component: { key: 'bar' }
   });
@@ -283,7 +294,6 @@ it('only fully loads a non-empty component once', async () => {
 });
 
 it('only fully reloads a non-empty component if there was previously some task in progress', async () => {
-  jest.useFakeTimers();
   (getComponentData as jest.Mock<any>).mockResolvedValueOnce({
     component: { key: 'bar', analysisDate: '2019-01-01' }
   });
@@ -318,18 +328,21 @@ it('only fully reloads a non-empty component if there was previously some task i
 });
 
 it('should show component not found if it does not exist', async () => {
-  (getComponentNavigation as jest.Mock).mockRejectedValueOnce({ status: 404 });
+  (getComponentNavigation as jest.Mock).mockRejectedValueOnce(
+    new Response(null, { status: HttpStatus.NotFound })
+  );
   const wrapper = shallowRender();
   await waitAndUpdate(wrapper);
   expect(wrapper).toMatchSnapshot();
 });
 
 it('should redirect if the user has no access', async () => {
-  (getComponentNavigation as jest.Mock).mockRejectedValueOnce({ status: 403 });
-  const requireAuthorization = jest.fn();
-  const wrapper = shallowRender({ requireAuthorization });
+  (getComponentNavigation as jest.Mock).mockRejectedValueOnce(
+    new Response(null, { status: HttpStatus.Forbidden })
+  );
+  const wrapper = shallowRender();
   await waitAndUpdate(wrapper);
-  expect(requireAuthorization).toBeCalled();
+  expect(handleRequiredAuthorization).toBeCalled();
 });
 
 it('should redirect if the component is a portfolio', async () => {
@@ -429,7 +442,6 @@ function shallowRender(props: Partial<ComponentContainer['props']> = {}) {
       appState={mockAppState()}
       location={mockLocation({ query: { id: 'foo' } })}
       registerBranchStatus={jest.fn()}
-      requireAuthorization={jest.fn()}
       router={mockRouter()}
       {...props}>
       <Inner />

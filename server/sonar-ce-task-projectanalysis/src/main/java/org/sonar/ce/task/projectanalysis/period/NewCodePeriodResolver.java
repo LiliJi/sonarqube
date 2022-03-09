@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -132,7 +132,7 @@ public class NewCodePeriodResolver {
 
   private Period findOldestAnalysis(DbSession dbSession, String projectUuid) {
     LOG.debug("Resolving first analysis as new code period as there is only one existing version");
-    Optional<Period> period = dbClient.snapshotDao().selectOldestSnapshot(dbSession, projectUuid)
+    Optional<Period> period = dbClient.snapshotDao().selectOldestAnalysis(dbSession, projectUuid)
       .map(dto -> newPeriod(NewCodePeriodType.PREVIOUS_VERSION, null, dto.getCreatedAt()));
     ensureNotOnFirstAnalysis(period.isPresent());
     return period.get();

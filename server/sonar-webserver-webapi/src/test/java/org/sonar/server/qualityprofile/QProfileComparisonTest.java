@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -38,8 +38,10 @@ import org.sonar.db.rule.RuleDefinitionDto;
 import org.sonar.db.rule.RuleParamDto;
 import org.sonar.db.rule.RuleTesting;
 import org.sonar.server.es.EsTester;
+import org.sonar.server.pushapi.qualityprofile.QualityProfileChangeEventService;
 import org.sonar.server.qualityprofile.QProfileComparison.ActiveRuleDiff;
 import org.sonar.server.qualityprofile.QProfileComparison.QProfileComparisonResult;
+import org.sonar.server.qualityprofile.builtin.RuleActivator;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 import org.sonar.server.rule.index.RuleIndex;
 import org.sonar.server.tester.UserSessionRule;
@@ -49,6 +51,7 @@ import org.sonar.server.util.TypeValidations;
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class QProfileComparisonTest {
 
@@ -74,8 +77,9 @@ public class QProfileComparisonTest {
     dbSession = db.openSession(false);
     RuleIndex ruleIndex = new RuleIndex(es.client(), System2.INSTANCE);
     ActiveRuleIndexer activeRuleIndexer = new ActiveRuleIndexer(db, es.client());
+    QualityProfileChangeEventService qualityProfileChangeEventService = mock(QualityProfileChangeEventService.class);
     RuleActivator ruleActivator = new RuleActivator(System2.INSTANCE, db, new TypeValidations(singletonList(new IntegerTypeValidation())), userSession);
-    qProfileRules = new QProfileRulesImpl(db, ruleActivator, ruleIndex, activeRuleIndexer);
+    qProfileRules = new QProfileRulesImpl(db, ruleActivator, ruleIndex, activeRuleIndexer, qualityProfileChangeEventService);
     comparison = new QProfileComparison(db);
 
     xooRule1 = RuleTesting.newXooX1().setSeverity("MINOR").getDefinition();

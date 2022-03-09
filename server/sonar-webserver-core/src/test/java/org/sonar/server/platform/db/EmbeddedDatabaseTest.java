@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -151,7 +151,7 @@ public class EmbeddedDatabaseTest {
 
   private void checkDbIsUp(int port, String user, String password) {
     try {
-      String driverUrl = String.format("jdbc:h2:tcp://%s:%d/sonar;USER=%s;PASSWORD=%s", LOOPBACK_ADDRESS, port, user, password);
+      String driverUrl = String.format("jdbc:h2:tcp://%s:%d/sonar;USER=%s;PASSWORD=%s;NON_KEYWORDS=VALUE", LOOPBACK_ADDRESS, port, user, password);
       DriverManager.registerDriver(new Driver());
       DriverManager.getConnection(driverUrl).close();
     } catch (Exception ex) {

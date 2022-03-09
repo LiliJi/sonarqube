@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,24 +19,32 @@
  */
 import { shallow } from 'enzyme';
 import * as React from 'react';
-import { mockLocation } from '../../../helpers/testMocks';
-import { AdminContainer } from '../AdminContainer';
+import { mockAppState, mockLocation } from '../../../helpers/testMocks';
+import { AdminContainer, AdminContainerProps } from '../AdminContainer';
+
+jest.mock('../../../api/plugins', () => ({
+  getSettingsNavigation: jest.fn().mockResolvedValue({}),
+  getPendingPlugins: jest.fn().mockResolvedValue({})
+}));
+
+jest.mock('../../../api/system', () => ({
+  getSystemStatus: jest.fn().mockResolvedValue({})
+}));
 
 it('should render correctly', () => {
   const wrapper = shallowRender();
   expect(wrapper).toMatchSnapshot();
 });
 
-function shallowRender(props: Partial<AdminContainer['props']> = {}) {
+function shallowRender(props: Partial<AdminContainerProps> = {}) {
   return shallow(
     <AdminContainer
-      appState={{
-        adminPages: [{ key: 'foo', name: 'Foo' }],
+      appState={mockAppState({
         canAdmin: true
-      }}
+      })}
       location={mockLocation()}
-      setAdminPages={jest.fn()}
-      {...props}
-    />
+      {...props}>
+      <div />
+    </AdminContainer>
   );
 }

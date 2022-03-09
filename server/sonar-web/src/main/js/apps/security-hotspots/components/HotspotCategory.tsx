@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -30,13 +30,24 @@ export interface HotspotCategoryProps {
   hotspots: RawHotspot[];
   onHotspotClick: (hotspot: RawHotspot) => void;
   onToggleExpand?: (categoryKey: string, value: boolean) => void;
+  onLocationClick: (index: number) => void;
+  onScroll: (element: Element) => void;
   selectedHotspot: RawHotspot;
+  selectedHotspotLocation?: number;
   title: string;
   isLastAndIncomplete: boolean;
 }
 
 export default function HotspotCategory(props: HotspotCategoryProps) {
-  const { categoryKey, expanded, hotspots, selectedHotspot, title, isLastAndIncomplete } = props;
+  const {
+    categoryKey,
+    expanded,
+    hotspots,
+    selectedHotspot,
+    title,
+    isLastAndIncomplete,
+    selectedHotspotLocation
+  } = props;
 
   if (hotspots.length < 1) {
     return null;
@@ -79,6 +90,9 @@ export default function HotspotCategory(props: HotspotCategoryProps) {
               <HotspotListItem
                 hotspot={h}
                 onClick={props.onHotspotClick}
+                onLocationClick={props.onLocationClick}
+                onScroll={props.onScroll}
+                selectedHotspotLocation={selectedHotspotLocation}
                 selected={h.key === selectedHotspot.key}
               />
             </li>

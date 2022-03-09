@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -32,7 +32,7 @@ import org.sonar.db.DbSession;
 import org.sonar.db.qualityprofile.QProfileDto;
 import org.sonar.server.qualityprofile.QProfileExporters;
 import org.sonar.server.qualityprofile.QProfileFactory;
-import org.sonar.server.qualityprofile.QProfileName;
+import org.sonar.server.qualityprofile.builtin.QProfileName;
 import org.sonar.server.qualityprofile.QProfileResult;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 import org.sonar.server.user.UserSession;
@@ -45,6 +45,7 @@ import static org.sonar.server.ws.WsUtils.writeProtobuf;
 import static org.sonarqube.ws.client.qualityprofile.QualityProfileWsParameters.ACTION_CREATE;
 import static org.sonarqube.ws.client.qualityprofile.QualityProfileWsParameters.PARAM_LANGUAGE;
 import static org.sonarqube.ws.client.qualityprofile.QualityProfileWsParameters.PARAM_NAME;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class CreateAction implements QProfileWsAction {
 
@@ -59,6 +60,7 @@ public class CreateAction implements QProfileWsAction {
   private final UserSession userSession;
   private final ActiveRuleIndexer activeRuleIndexer;
 
+  @Autowired(required = false)
   public CreateAction(DbClient dbClient, QProfileFactory profileFactory, QProfileExporters exporters, Languages languages,
     UserSession userSession, ActiveRuleIndexer activeRuleIndexer, ProfileImporter... importers) {
     this.dbClient = dbClient;
@@ -70,6 +72,7 @@ public class CreateAction implements QProfileWsAction {
     this.importers = importers;
   }
 
+  @Autowired(required = false)
   public CreateAction(DbClient dbClient, QProfileFactory profileFactory, QProfileExporters exporters, Languages languages,
     UserSession userSession, ActiveRuleIndexer activeRuleIndexer) {
     this(dbClient, profileFactory, exporters, languages, userSession, activeRuleIndexer, new ProfileImporter[0]);

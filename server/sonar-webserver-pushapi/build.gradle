@@ -1,0 +1,22 @@
+sonarqube {
+    properties {
+        property 'sonar.projectName', "${projectTitle} :: WebServer :: PushAPI"
+    }
+}
+dependencies {
+
+    compile 'javax.servlet:javax.servlet-api'
+    compile 'org.json:json'
+
+    compile project(':server:sonar-webserver-ws')
+    compile project(':server:sonar-webserver-auth')
+
+    testCompile 'junit:junit'
+    testCompile 'org.assertj:assertj-core'
+    testCompile 'org.mockito:mockito-core'
+    testCompile testFixtures(project(':server:sonar-webserver-ws'))
+    testCompile testFixtures(project(':server:sonar-db-dao'))
+
+    testFixturesApi project(':sonar-testing-harness')
+    testFixturesCompileOnly testFixtures(project(':server:sonar-webserver-ws'))
+}

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -40,7 +40,7 @@ import java.util.Set;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import org.apache.commons.io.IOUtils;
-import org.picocontainer.Startable;
+import org.sonar.api.Startable;
 import org.sonar.api.utils.SonarException;
 import org.sonar.api.utils.System2;
 import org.sonar.api.utils.log.Logger;

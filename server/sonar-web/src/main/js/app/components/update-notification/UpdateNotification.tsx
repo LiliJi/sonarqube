@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,11 +17,9 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 import { groupBy, isEmpty, mapValues } from 'lodash';
 import * as React from 'react';
 import { getSystemUpgrades } from '../../../api/system';
-import { withAppState } from '../../../components/hoc/withAppState';
 import { withCurrentUser } from '../../../components/hoc/withCurrentUser';
 import { Alert, AlertVariant } from '../../../components/ui/Alert';
 import DismissableAlert from '../../../components/ui/DismissableAlert';
@@ -32,6 +30,7 @@ import { hasGlobalPermission, isLoggedIn } from '../../../helpers/users';
 import { Permissions } from '../../../types/permissions';
 import { SystemUpgrade } from '../../../types/system';
 import { AppState, CurrentUser, Dict } from '../../../types/types';
+import withAppStateContext from '../app-state/withAppStateContext';
 import './UpdateNotification.css';
 
 const MONTH_BEFOR_PREVIOUS_LTS_NOTIFICATION = 6;
@@ -49,7 +48,7 @@ const MAP_VARIANT: Dict<AlertVariant> = {
 
 interface Props {
   dismissable: boolean;
-  appState: Pick<AppState, 'version'>;
+  appState: AppState;
   currentUser: CurrentUser;
 }
 
@@ -250,4 +249,4 @@ export class UpdateNotification extends React.PureComponent<Props, State> {
   }
 }
 
-export default withCurrentUser(withAppState(UpdateNotification));
+export default withCurrentUser(withAppStateContext(UpdateNotification));

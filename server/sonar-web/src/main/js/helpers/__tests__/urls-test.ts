@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -140,6 +140,27 @@ describe('#getComponentDrilldownUrl', () => {
     ).toEqual({
       pathname: '/component_measures',
       query: { id: COMPLEX_COMPONENT_KEY, metric: METRIC }
+    });
+  });
+
+  it('should add asc param only when its list view', () => {
+    expect(
+      getComponentDrilldownUrl({ componentKey: SIMPLE_COMPONENT_KEY, metric: METRIC, asc: false })
+    ).toEqual({
+      pathname: '/component_measures',
+      query: { id: SIMPLE_COMPONENT_KEY, metric: METRIC }
+    });
+
+    expect(
+      getComponentDrilldownUrl({
+        componentKey: SIMPLE_COMPONENT_KEY,
+        metric: METRIC,
+        listView: true,
+        asc: false
+      })
+    ).toEqual({
+      pathname: '/component_measures',
+      query: { id: SIMPLE_COMPONENT_KEY, metric: METRIC, asc: 'false', view: 'list' }
     });
   });
 });

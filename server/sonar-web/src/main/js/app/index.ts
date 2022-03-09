@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ if (isMainApp()) {
 
   Promise.all([loadL10nBundle(), loadUser(), loadAppState(), loadApp()]).then(
     ([l10nBundle, user, appState, startReactApp]) => {
-      startReactApp(l10nBundle.locale, user, appState);
+      startReactApp(l10nBundle.locale, appState, user);
     },
     error => {
       if (isResponse(error) && error.status === 401) {
@@ -44,19 +44,25 @@ if (isMainApp()) {
 } else {
   // login, maintenance or setup pages
 
-  const appStatePromise: Promise<AppState | undefined> = new Promise(resolve => {
+  const appStatePromise: Promise<AppState> = new Promise(resolve => {
     loadAppState()
       .then(data => {
         resolve(data);
       })
       .catch(() => {
-        resolve(undefined);
+        resolve({
+          edition: undefined,
+          productionDatabase: true,
+          qualifiers: [],
+          settings: {},
+          version: ''
+        });
       });
   });
 
   Promise.all([loadL10nBundle(), appStatePromise, loadApp()]).then(
     ([l10nBundle, appState, startReactApp]) => {
-      startReactApp(l10nBundle.locale, undefined, appState);
+      startReactApp(l10nBundle.locale, appState);
     },
     error => {
       logError(error);

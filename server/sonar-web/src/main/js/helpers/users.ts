@@ -1,8 +1,6 @@
-import { CurrentUser, LoggedInUser, UserActive, UserBase } from '../types/types';
-
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +17,8 @@ import { CurrentUser, LoggedInUser, UserActive, UserBase } from '../types/types'
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+import { CurrentUser, LoggedInUser, UserActive, UserBase } from '../types/types';
+
 export function hasGlobalPermission(user: CurrentUser, permission: string): boolean {
   if (!user.permissions) {
     return false;

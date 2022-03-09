@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -161,6 +161,7 @@ export default class SourceViewerCode extends React.PureComponent<Props> {
         displayIssueLocationsLink={this.props.displayIssueLocationsLink}
         displayIssues={displayIssues}
         displayLocationMarkers={this.props.displayLocationMarkers}
+        displaySCM={sources.length > 0}
         duplications={this.getDuplicationsForLine(line)}
         duplicationsCount={duplicationsCount}
         firstLineNumber={firstLineNumber}

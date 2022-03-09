@@ -31,16 +31,10 @@ exports[`should render correctly 1`] = `
   }
   loading={true}
   onCloseStatusUpdateSuccessModal={[Function]}
+  onLocationClick={[MockFunction]}
   onShowCommentForm={[Function]}
   onSwitchFilterToStatusOfUpdatedHotspot={[Function]}
   onUpdateHotspot={[Function]}
-  securityCategories={
-    Object {
-      "cat1": Object {
-        "title": "cat1",
-      },
-    }
-  }
   showStatusUpdateSuccessModal={false}
 />
 `;
@@ -81,16 +75,10 @@ exports[`should render correctly 2`] = `
   }
   loading={false}
   onCloseStatusUpdateSuccessModal={[Function]}
+  onLocationClick={[MockFunction]}
   onShowCommentForm={[Function]}
   onSwitchFilterToStatusOfUpdatedHotspot={[Function]}
   onUpdateHotspot={[Function]}
-  securityCategories={
-    Object {
-      "cat1": Object {
-        "title": "cat1",
-      },
-    }
-  }
   showStatusUpdateSuccessModal={false}
 />
 `;

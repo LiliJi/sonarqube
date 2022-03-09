@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -26,11 +26,6 @@ import { GlobalNav, GlobalNavProps } from '../GlobalNav';
 // https://stackoverflow.com/questions/43375079/redux-warning-only-appearing-in-tests
 jest.mock('../../../../../store/rootReducer');
 
-const appState: GlobalNavProps['appState'] = {
-  globalPages: [],
-  canAdmin: false,
-  qualifiers: []
-};
 const location = { pathname: '' };
 
 it('should render correctly', async () => {
@@ -44,12 +39,5 @@ it('should render correctly', async () => {
 });
 
 function shallowRender(props: Partial<GlobalNavProps> = {}) {
-  return shallow(
-    <GlobalNav
-      appState={appState}
-      currentUser={{ isLoggedIn: false }}
-      location={location}
-      {...props}
-    />
-  );
+  return shallow(<GlobalNav currentUser={{ isLoggedIn: false }} location={location} {...props} />);
 }

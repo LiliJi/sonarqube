@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -88,14 +88,6 @@ public class FileIndexer {
     this.properties = properties;
     this.filters = filters;
     this.projectExclusionFilters = projectExclusionFilters;
-  }
-
-  public FileIndexer(DefaultInputProject project, ScannerComponentIdGenerator scannerComponentIdGenerator, InputComponentStore componentStore,
-    ProjectExclusionFilters projectExclusionFilters, ProjectCoverageAndDuplicationExclusions projectCoverageAndDuplicationExclusions,
-    IssueExclusionsLoader issueExclusionsLoader, MetadataGenerator metadataGenerator, SensorStrategy sensorStrategy,
-    LanguageDetection languageDetection, AnalysisWarnings analysisWarnings, ScanProperties properties) {
-    this(project, scannerComponentIdGenerator, componentStore, projectExclusionFilters, projectCoverageAndDuplicationExclusions, issueExclusionsLoader,
-      metadataGenerator, sensorStrategy, languageDetection, analysisWarnings, properties, new InputFileFilter[0]);
   }
 
   void indexFile(DefaultInputModule module, ModuleExclusionFilters moduleExclusionFilters, ModuleCoverageAndDuplicationExclusions moduleCoverageAndDuplicationExclusions,

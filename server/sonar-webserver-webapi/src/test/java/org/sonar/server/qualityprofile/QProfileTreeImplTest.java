@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -36,6 +36,8 @@ import org.sonar.db.qualityprofile.QProfileDto;
 import org.sonar.db.rule.RuleDefinitionDto;
 import org.sonar.server.es.EsTester;
 import org.sonar.server.exceptions.BadRequestException;
+import org.sonar.server.pushapi.qualityprofile.QualityProfileChangeEventService;
+import org.sonar.server.qualityprofile.builtin.RuleActivator;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 import org.sonar.server.tester.UserSessionRule;
 import org.sonar.server.util.IntegerTypeValidation;
@@ -47,6 +49,12 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singleton;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.sonar.api.rule.Severity.BLOCKER;
 import static org.sonar.server.qualityprofile.ActiveRuleInheritance.INHERITED;
 
@@ -61,9 +69,10 @@ public class QProfileTreeImplTest {
   public UserSessionRule userSession = UserSessionRule.standalone();
   private ActiveRuleIndexer activeRuleIndexer = new ActiveRuleIndexer(db.getDbClient(), es.client());
   private TypeValidations typeValidations = new TypeValidations(asList(new StringTypeValidation(), new IntegerTypeValidation()));
+  private QualityProfileChangeEventService qualityProfileChangeEventService = mock(QualityProfileChangeEventService.class);
   private RuleActivator ruleActivator = new RuleActivator(system2, db.getDbClient(), typeValidations, userSession);
-  private QProfileRules qProfileRules = new QProfileRulesImpl(db.getDbClient(), ruleActivator, null, activeRuleIndexer);
-  private QProfileTree underTest = new QProfileTreeImpl(db.getDbClient(), ruleActivator, System2.INSTANCE, activeRuleIndexer);
+  private QProfileRules qProfileRules = new QProfileRulesImpl(db.getDbClient(), ruleActivator, null, activeRuleIndexer, qualityProfileChangeEventService);
+  private QProfileTree underTest = new QProfileTreeImpl(db.getDbClient(), ruleActivator, System2.INSTANCE, activeRuleIndexer, mock(QualityProfileChangeEventService.class));
 
   @Test
   public void set_itself_as_parent_fails() {
@@ -133,11 +142,13 @@ public class QProfileTreeImplTest {
     assertThat(changes).hasSize(1);
     assertThatRuleIsActivated(profile2, rule1, changes, rule1.getSeverityString(), INHERITED, emptyMap());
     assertThatRuleIsActivated(profile2, rule2, null, rule2.getSeverityString(), null, emptyMap());
+    verify(qualityProfileChangeEventService, times(2)).distributeRuleChangeEvent(any(), any(), eq(profile2.getLanguage()));
 
     changes = underTest.removeParentAndCommit(db.getSession(), profile2);
     assertThat(changes).hasSize(1);
     assertThatRuleIsActivated(profile2, rule2, null, rule2.getSeverityString(), null, emptyMap());
     assertThatRuleIsNotPresent(profile2, rule1);
+    verify(qualityProfileChangeEventService, times(2)).distributeRuleChangeEvent(any(), any(), eq(profile2.getLanguage()));
   }
 
   @Test
@@ -156,6 +167,7 @@ public class QProfileTreeImplTest {
     assertThat(changes).hasSize(1);
     assertThatRuleIsActivated(profile2, rule1, changes, rule1.getSeverityString(), INHERITED, emptyMap());
     assertThatRuleIsActivated(profile2, rule2, null, rule2.getSeverityString(), null, emptyMap());
+    verify(qualityProfileChangeEventService, times(2)).distributeRuleChangeEvent(any(), any(), eq(profile2.getLanguage()));
 
     RuleActivation activation = RuleActivation.create(rule1.getUuid(), BLOCKER, null);
     changes = activate(profile2, activation);
@@ -168,6 +180,7 @@ public class QProfileTreeImplTest {
     // Not testing changes here since severity is not set in changelog
     assertThatRuleIsActivated(profile2, rule1, null, BLOCKER, null, emptyMap());
     assertThatRuleIsActivated(profile2, rule2, null, rule2.getSeverityString(), null, emptyMap());
+    verify(qualityProfileChangeEventService, times(3)).distributeRuleChangeEvent(anyList(), any(), eq(profile2.getLanguage()));
   }
 
   @Test
@@ -183,6 +196,7 @@ public class QProfileTreeImplTest {
 
     QProfileDto childProfile = createProfile(rule1);
     List<ActiveRuleChange> changes = underTest.setParentAndCommit(db.getSession(), childProfile, parentProfile);
+    verify(qualityProfileChangeEventService, times(2)).distributeRuleChangeEvent(any(), any(), eq(childProfile.getLanguage()));
 
     assertThatRuleIsNotPresent(childProfile, rule1);
     assertThatRuleIsActivated(childProfile, rule2, changes, rule2.getSeverityString(), INHERITED, emptyMap());

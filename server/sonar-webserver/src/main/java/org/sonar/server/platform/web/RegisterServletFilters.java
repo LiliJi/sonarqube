@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,8 +20,9 @@
 package org.sonar.server.platform.web;
 
 import java.util.Arrays;
-import org.picocontainer.Startable;
+import org.sonar.api.Startable;
 import org.sonar.api.web.ServletFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @since 3.5
@@ -29,10 +30,12 @@ import org.sonar.api.web.ServletFilter;
 public class RegisterServletFilters implements Startable {
   private final ServletFilter[] filters;
 
+  @Autowired(required = false)
   public RegisterServletFilters(ServletFilter[] filters) {
     this.filters = filters;
   }
 
+  @Autowired(required = false)
   public RegisterServletFilters() {
     this(new ServletFilter[0]);
   }

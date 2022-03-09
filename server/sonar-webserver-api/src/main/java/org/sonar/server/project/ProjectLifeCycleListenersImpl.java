@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,15 +34,17 @@ public class ProjectLifeCycleListenersImpl implements ProjectLifeCycleListeners 
   private final ProjectLifeCycleListener[] listeners;
 
   /**
-   * Used by Pico when there is no ProjectLifeCycleListener implementation in container.
+   * Used by the container when there is no ProjectLifeCycleListener implementation in container.
    */
+  @Autowired(required = false)
   public ProjectLifeCycleListenersImpl() {
     this.listeners = new ProjectLifeCycleListener[0];
   }
 
   /**
-   * Used by Pico when there is at least one ProjectLifeCycleListener implementation in container.
+   * Used by the container when there is at least one ProjectLifeCycleListener implementation in container.
    */
+  @Autowired(required = false)
   public ProjectLifeCycleListenersImpl(ProjectLifeCycleListener[] listeners) {
     this.listeners = listeners;
   }

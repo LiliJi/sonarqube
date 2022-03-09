@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -703,7 +703,7 @@ public class SearchActionTest {
     assertThat(definition.responseExampleAsString()).isNotEmpty();
     assertThat(definition.param("project").isRequired()).isTrue();
     assertThat(definition.param("category")).isNotNull();
-    assertThat(definition.params()).hasSize(7);
+    assertThat(definition.params()).hasSize(8);
 
     Param from = definition.param("from");
     assertThat(from.since()).isEqualTo("6.5");

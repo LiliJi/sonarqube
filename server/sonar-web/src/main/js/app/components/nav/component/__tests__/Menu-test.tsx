@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,6 +25,7 @@ import {
   mockPullRequest
 } from '../../../../../helpers/mocks/branch-like';
 import { mockComponent } from '../../../../../helpers/mocks/component';
+import { mockAppState } from '../../../../../helpers/testMocks';
 import { ComponentQualifier } from '../../../../../types/component';
 import { Menu } from '../Menu';
 
@@ -165,7 +166,7 @@ it('should disable links if application has inaccessible projects', () => {
 function shallowRender(props: Partial<Menu['props']>) {
   return shallow<Menu>(
     <Menu
-      appState={{ branchesEnabled: true }}
+      appState={mockAppState({ branchesEnabled: true })}
       branchLike={mainBranch}
       branchLikes={[mainBranch]}
       component={baseComponent}

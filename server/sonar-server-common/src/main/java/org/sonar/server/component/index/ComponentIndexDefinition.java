@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -36,6 +36,8 @@ import static org.sonar.server.es.newindex.SettingsConfiguration.MANUAL_REFRESH_
 import static org.sonar.server.es.newindex.SettingsConfiguration.newBuilder;
 import static org.sonar.server.permission.index.IndexAuthorizationConstants.TYPE_AUTHORIZATION;
 
+import javax.inject.Inject;
+
 public class ComponentIndexDefinition implements IndexDefinition {
 
   public static final Index DESCRIPTOR = Index.withRelations("components");
@@ -58,6 +60,7 @@ public class ComponentIndexDefinition implements IndexDefinition {
     this.enableSource = enableSource;
   }
 
+  @Inject
   public ComponentIndexDefinition(Configuration config) {
     this(config, false);
   }

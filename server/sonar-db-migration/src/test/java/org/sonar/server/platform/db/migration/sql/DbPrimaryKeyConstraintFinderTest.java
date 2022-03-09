@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -97,6 +97,6 @@ public class DbPrimaryKeyConstraintFinderTest {
     when(dbMock.getDialect()).thenReturn(H2);
 
     assertThat(underTest.getDbVendorSpecificQuery("my_table"))
-      .isEqualTo("SELECT constraint_name FROM information_schema.constraints WHERE table_name = 'MY_TABLE' and constraint_type = 'PRIMARY KEY'");
+      .isEqualTo("SELECT constraint_name FROM information_schema.table_constraints WHERE table_name = 'MY_TABLE' and constraint_type = 'PRIMARY KEY'");
   }
 }

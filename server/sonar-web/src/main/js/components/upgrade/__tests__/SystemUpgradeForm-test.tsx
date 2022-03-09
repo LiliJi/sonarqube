@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
  */
 import { shallow } from 'enzyme';
 import * as React from 'react';
+import { mockAppState } from '../../../helpers/testMocks';
 import { EditionKey } from '../../../types/editions';
 import { SystemUpgradeForm } from '../SystemUpgradeForm';
 import { UpdateUseCase } from '../utils';
@@ -76,7 +77,7 @@ it.each([...Object.values(UpdateUseCase), undefined])(
     expect(
       shallow(
         <SystemUpgradeForm
-          appState={{ edition: EditionKey.community, version: '5.6.3' }}
+          appState={mockAppState({ edition: EditionKey.community, version: '5.6.3' })}
           onClose={jest.fn()}
           systemUpgrades={UPGRADES}
           latestLTS="9.1"

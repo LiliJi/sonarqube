@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -109,7 +109,7 @@ public class DbPrimaryKeyConstraintFinder {
 
   private static String getH2ConstraintQuery(String tableName) {
     return format("SELECT constraint_name "
-      + "FROM information_schema.constraints "
+      + "FROM information_schema.table_constraints "
       + "WHERE table_name = '%s' and constraint_type = 'PRIMARY KEY'", tableName.toUpperCase(Locale.ENGLISH));
   }
 

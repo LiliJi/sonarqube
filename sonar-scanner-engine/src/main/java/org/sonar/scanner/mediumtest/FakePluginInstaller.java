@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -24,11 +24,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Priority;
 import org.sonar.api.Plugin;
 import org.sonar.core.platform.PluginInfo;
 import org.sonar.scanner.bootstrap.PluginInstaller;
 import org.sonar.scanner.bootstrap.ScannerPlugin;
 
+@Priority(1)
 public class FakePluginInstaller implements PluginInstaller {
 
   private final Map<String, ScannerPlugin> pluginsByKeys = new HashMap<>();

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -30,6 +30,7 @@ import { Component } from '../../../types/types';
 interface Props {
   branch: Branch;
   component: Component;
+  onUpdatePurgeSetting: () => void;
 }
 
 interface State {
@@ -68,6 +69,7 @@ export default class BranchPurgeSetting extends React.PureComponent<Props, State
             excludedFromPurge: newValue,
             loading: false
           });
+          this.props.onUpdatePurgeSetting();
         }
       })
       .catch(() => {

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,11 +17,9 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 import { shallow } from 'enzyme';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { fetchLanguages as realFetchLanguages } from '../../../store/rootActions';
 import { App } from '../App';
 
 jest.mock('react-redux', () => ({
@@ -41,33 +39,22 @@ it('should render correctly', () => {
   ).toMatchSnapshot('with gravatar');
 });
 
-it('should correctly fetch available languages', () => {
-  const fetchLanguages = jest.fn();
-  shallowRender({ fetchLanguages });
-  expect(fetchLanguages).toBeCalled();
-});
-
 it('should correctly set the scrollbar width as a custom property', () => {
   shallowRender();
   expect(document.body.style.getPropertyValue('--sbw')).toBe('0px');
 });
 
 describe('redux', () => {
-  it('should correctly map state and dispatch props', () => {
-    const [mapStateToProps, mapDispatchToProps] = (connect as jest.Mock).mock.calls[0];
+  it('should correctly map state props', () => {
+    const [mapStateToProps] = (connect as jest.Mock).mock.calls[0];
 
     expect(mapStateToProps({})).toEqual({
       enableGravatar: true,
       gravatarServerUrl: 'http://gravatar.com'
     });
-    expect(mapDispatchToProps).toEqual(
-      expect.objectContaining({ fetchLanguages: realFetchLanguages })
-    );
   });
 });
 
 function shallowRender(props: Partial<App['props']> = {}) {
-  return shallow<App>(
-    <App fetchLanguages={jest.fn()} enableGravatar={false} gravatarServerUrl="" {...props} />
-  );
+  return shallow<App>(<App enableGravatar={false} gravatarServerUrl="" {...props} />);
 }

@@ -11,6 +11,7 @@ exports[`should render correctly: loaded 1`] = `
     <Helmet
       defer={false}
       encodeSpecialCharacters={true}
+      prioritizeSeoTags={false}
       title="qualitygate"
     />
     <DetailsHeader
@@ -26,7 +27,6 @@ exports[`should render correctly: loaded 1`] = `
     />
     <Memo(DetailsContent)
       isDefault={false}
-      metrics={Object {}}
       onAddCondition={[Function]}
       onRemoveCondition={[Function]}
       onSaveCondition={[Function]}

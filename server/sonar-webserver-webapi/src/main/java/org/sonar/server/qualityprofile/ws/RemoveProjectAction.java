@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -30,6 +30,7 @@ import org.sonar.db.DbSession;
 import org.sonar.db.project.ProjectDto;
 import org.sonar.db.qualityprofile.QProfileDto;
 import org.sonar.server.component.ComponentFinder;
+import org.sonar.server.pushapi.qualityprofile.QualityProfileChangeEventService;
 import org.sonar.server.user.UserSession;
 
 import static org.sonar.server.user.AbstractUserSession.insufficientPrivilegesException;
@@ -44,13 +45,16 @@ public class RemoveProjectAction implements QProfileWsAction {
   private final Languages languages;
   private final ComponentFinder componentFinder;
   private final QProfileWsSupport wsSupport;
+  private final QualityProfileChangeEventService qualityProfileChangeEventService;
 
-  public RemoveProjectAction(DbClient dbClient, UserSession userSession, Languages languages, ComponentFinder componentFinder, QProfileWsSupport wsSupport) {
+  public RemoveProjectAction(DbClient dbClient, UserSession userSession, Languages languages, ComponentFinder componentFinder,
+    QProfileWsSupport wsSupport, QualityProfileChangeEventService qualityProfileChangeEventService) {
     this.dbClient = dbClient;
     this.userSession = userSession;
     this.languages = languages;
     this.componentFinder = componentFinder;
     this.wsSupport = wsSupport;
+    this.qualityProfileChangeEventService = qualityProfileChangeEventService;
   }
 
   @Override
@@ -85,6 +89,16 @@ public class RemoveProjectAction implements QProfileWsAction {
 
       dbClient.qualityProfileDao().deleteProjectProfileAssociation(dbSession, project, profile);
       dbSession.commit();
+
+      QProfileDto activatedProfile = null;
+
+      // publish change for rules in the default quality profile
+      QProfileDto defaultProfile = dbClient.qualityProfileDao().selectDefaultProfile(dbSession, profile.getLanguage());
+      if (defaultProfile != null) {
+        activatedProfile = defaultProfile;
+      }
+
+      qualityProfileChangeEventService.publishRuleActivationToSonarLintClients(project, activatedProfile, profile);
 
       response.noContent();
     }

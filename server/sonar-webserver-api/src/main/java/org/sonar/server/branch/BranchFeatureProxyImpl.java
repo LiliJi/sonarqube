@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,15 +19,13 @@
  */
 package org.sonar.server.branch;
 
+import javax.annotation.Nullable;
+
 public class BranchFeatureProxyImpl implements BranchFeatureProxy {
 
   private final BranchFeatureExtension branchFeatureExtension;
 
-  public BranchFeatureProxyImpl() {
-    this.branchFeatureExtension = null;
-  }
-
-  public BranchFeatureProxyImpl(BranchFeatureExtension branchFeatureExtension) {
+  public BranchFeatureProxyImpl(@Nullable BranchFeatureExtension branchFeatureExtension) {
     this.branchFeatureExtension = branchFeatureExtension;
   }
 

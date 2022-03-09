@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.CheckForNull;
+import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import org.sonar.api.impl.ws.PartImpl;
 import org.sonar.api.impl.ws.ValidatingRequest;
@@ -66,6 +67,10 @@ public class ServletRequest extends ValidatingRequest {
       firstNonNull(
         acceptedContentTypeInResponse(),
         MediaTypes.DEFAULT));
+  }
+
+  public HttpServletRequest getHttpRequest() {
+    return source;
   }
 
   @Override
@@ -120,6 +125,10 @@ public class ServletRequest extends ValidatingRequest {
       Loggers.get(ServletRequest.class).warn("Can't read file part for parameter " + key, e);
       return null;
     }
+  }
+
+  public AsyncContext startAsync() {
+    return source.startAsync();
   }
 
   private boolean isMultipartContent() {

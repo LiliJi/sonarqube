@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,7 +17,6 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-
 import { shallow } from 'enzyme';
 import * as React from 'react';
 import {
@@ -29,7 +28,7 @@ import addGlobalSuccessMessage from '../../../app/utils/addGlobalSuccessMessage'
 import { mockBranch } from '../../../helpers/mocks/branch-like';
 import { mockComponent } from '../../../helpers/mocks/component';
 import { mockComponentReportStatus } from '../../../helpers/mocks/component-report';
-import { mockCurrentUser } from '../../../helpers/testMocks';
+import { mockAppState, mockCurrentUser } from '../../../helpers/testMocks';
 import { waitAndUpdate } from '../../../helpers/testUtils';
 import { ComponentQualifier } from '../../../types/component';
 import { ComponentReportActions } from '../ComponentReportActions';
@@ -70,7 +69,7 @@ it('should not render anything', async () => {
   expect(w2.type()).toBeNull();
 
   // no governance
-  const w3 = shallowRender({ appState: { qualifiers: [] } });
+  const w3 = shallowRender({ appState: mockAppState({ qualifiers: [] }) });
   await waitAndUpdate(w3);
   expect(w3.type()).toBeNull();
 });
@@ -119,7 +118,7 @@ it('should handle unsubscription', async () => {
 function shallowRender(props: Partial<ComponentReportActions['props']> = {}) {
   return shallow<ComponentReportActions>(
     <ComponentReportActions
-      appState={{ qualifiers: [ComponentQualifier.Portfolio] }}
+      appState={mockAppState({ qualifiers: [ComponentQualifier.Portfolio] })}
       component={mockComponent()}
       currentUser={mockCurrentUser()}
       {...props}

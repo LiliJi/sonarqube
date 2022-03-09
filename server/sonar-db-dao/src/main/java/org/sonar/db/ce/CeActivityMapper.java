@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -35,6 +35,8 @@ public interface CeActivityMapper {
   List<CeActivityDto> selectOlderThan(@Param("beforeDate") long beforeDate);
 
   List<CeActivityDto> selectNewerThan(@Param("afterDate") long afterDate);
+
+  int countByQuery(@Param("query") CeTaskQuery query);
 
   int countLastByStatusAndMainComponentUuid(@Param("status") CeActivityDto.Status status, @Nullable @Param("mainComponentUuid") String mainComponentUuid);
 

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -47,7 +47,8 @@ public class SearchRequestTest {
       .setCreatedBefore("2013-04-17T09:08:24+0200")
       .setRules(asList("key-a", "key-b"))
       .setSort("CREATION_DATE")
-      .setAsc(true);
+      .setAsc(true)
+      .setInNewCodePeriod(true);
 
     assertThat(underTest.getIssues()).containsOnlyOnce("anIssueKey");
     assertThat(underTest.getSeverities()).containsExactly("MAJOR", "MINOR");
@@ -67,6 +68,7 @@ public class SearchRequestTest {
     assertThat(underTest.getRules()).containsExactly("key-a", "key-b");
     assertThat(underTest.getSort()).isEqualTo("CREATION_DATE");
     assertThat(underTest.getAsc()).isTrue();
+    assertThat(underTest.getInNewCodePeriod()).isTrue();
   }
 
   @Test

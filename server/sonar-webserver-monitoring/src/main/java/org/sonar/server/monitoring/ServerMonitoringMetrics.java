@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -45,6 +45,8 @@ public class ServerMonitoringMetrics {
   private final Gauge linesOfCodeAnalyzed;
 
   private final Gauge webUptimeMinutes;
+
+  private final Gauge numberOfConnectedSonarLintClients;
 
   public ServerMonitoringMetrics() {
     githubHealthIntegrationStatus = Gauge.build()
@@ -118,6 +120,11 @@ public class ServerMonitoringMetrics {
     webUptimeMinutes = Gauge.build()
       .name("sonarqube_web_uptime_minutes")
       .help("Number of minutes for how long the SonarQube instance is running")
+      .register();
+
+    numberOfConnectedSonarLintClients = Gauge.build()
+      .name("sonarqube_number_of_connected_sonarlint_clients")
+      .help("Number of connected SonarLint clients")
       .register();
 
   }
@@ -200,5 +207,9 @@ public class ServerMonitoringMetrics {
 
   public void setWebUptimeMinutes(long minutes) {
     webUptimeMinutes.set(minutes);
+  }
+
+  public void setNumberOfConnectedSonarLintClients(long noOfClients) {
+    numberOfConnectedSonarLintClients.set(noOfClients);
   }
 }

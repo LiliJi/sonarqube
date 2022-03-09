@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -146,8 +146,8 @@ export default class ConditionModal extends React.PureComponent<Props, State> {
           {metrics && (
             <MetricSelect
               metric={metric}
-              metrics={metrics.filter(metric =>
-                scope === 'new' ? isDiffMetric(metric.key) : !isDiffMetric(metric.key)
+              metricsArray={metrics.filter(m =>
+                scope === 'new' ? isDiffMetric(m.key) : !isDiffMetric(m.key)
               )}
               onMetricChange={this.handleMetricChange}
             />

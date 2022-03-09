@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -36,7 +36,13 @@ jest.mock('../../../api/project-dump', () => ({
 }));
 
 beforeEach(() => {
+  jest.useFakeTimers();
   jest.clearAllMocks();
+});
+
+afterEach(() => {
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
 });
 
 it('should render correctly', async () => {
@@ -58,8 +64,6 @@ it('should render correctly', async () => {
 });
 
 it('should poll for task status update', async () => {
-  jest.useFakeTimers();
-
   const wrapper = shallowRender();
   await waitAndUpdate(wrapper);
 

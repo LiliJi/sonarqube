@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -31,6 +31,9 @@ import org.sonar.db.qualityprofile.ActiveRuleDto;
 import org.sonar.db.qualityprofile.OrgActiveRuleDto;
 import org.sonar.db.qualityprofile.QProfileDto;
 import org.sonar.server.exceptions.BadRequestException;
+import org.sonar.server.pushapi.qualityprofile.QualityProfileChangeEventService;
+import org.sonar.server.qualityprofile.builtin.RuleActivationContext;
+import org.sonar.server.qualityprofile.builtin.RuleActivator;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 
 import static org.sonar.server.exceptions.BadRequestException.checkRequest;
@@ -41,12 +44,15 @@ public class QProfileTreeImpl implements QProfileTree {
   private final RuleActivator ruleActivator;
   private final System2 system2;
   private final ActiveRuleIndexer activeRuleIndexer;
+  private final QualityProfileChangeEventService qualityProfileChangeEventService;
 
-  public QProfileTreeImpl(DbClient db, RuleActivator ruleActivator, System2 system2, ActiveRuleIndexer activeRuleIndexer) {
+  public QProfileTreeImpl(DbClient db, RuleActivator ruleActivator, System2 system2, ActiveRuleIndexer activeRuleIndexer,
+    QualityProfileChangeEventService qualityProfileChangeEventService) {
     this.db = db;
     this.ruleActivator = ruleActivator;
     this.system2 = system2;
     this.activeRuleIndexer = activeRuleIndexer;
+    this.qualityProfileChangeEventService = qualityProfileChangeEventService;
   }
 
   @Override
@@ -92,6 +98,7 @@ public class QProfileTreeImpl implements QProfileTree {
         // TODO return errors
       }
     }
+    qualityProfileChangeEventService.distributeRuleChangeEvent(List.of(profile), changes, profile.getLanguage());
     return changes;
   }
 
@@ -120,6 +127,8 @@ public class QProfileTreeImpl implements QProfileTree {
         changes.add(new ActiveRuleChange(ActiveRuleChange.Type.UPDATED, activeRule, context.getRule().get()).setInheritance(null));
       }
     }
+
+    qualityProfileChangeEventService.distributeRuleChangeEvent(List.of(profile), changes, profile.getLanguage());
     return changes;
   }
 

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -33,6 +33,8 @@ import static org.sonar.server.es.newindex.DefaultIndexSettingsElement.SEARCH_GR
 import static org.sonar.server.es.newindex.DefaultIndexSettingsElement.SORTABLE_ANALYZER;
 import static org.sonar.server.es.newindex.SettingsConfiguration.MANUAL_REFRESH_INTERVAL;
 import static org.sonar.server.es.newindex.SettingsConfiguration.newBuilder;
+
+import javax.inject.Inject;
 
 public class ProjectMeasuresIndexDefinition implements IndexDefinition {
 
@@ -71,6 +73,7 @@ public class ProjectMeasuresIndexDefinition implements IndexDefinition {
     this.enableSource = enableSource;
   }
 
+  @Inject
   public ProjectMeasuresIndexDefinition(Configuration config) {
     this(config, false);
   }

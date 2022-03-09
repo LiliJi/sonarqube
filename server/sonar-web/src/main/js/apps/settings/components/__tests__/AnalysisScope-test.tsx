@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -27,5 +27,12 @@ it('should render correctly', () => {
 });
 
 function shallowRender() {
-  return shallow(<AnalysisScope component={mockComponent()} selectedCategory="TEST" />);
+  return shallow(
+    <AnalysisScope
+      categories={[]}
+      component={mockComponent()}
+      definitions={[]}
+      selectedCategory="TEST"
+    />
+  );
 }

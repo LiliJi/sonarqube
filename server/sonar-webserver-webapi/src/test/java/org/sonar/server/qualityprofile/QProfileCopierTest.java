@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -30,6 +30,7 @@ import org.sonar.db.DbSession;
 import org.sonar.db.DbTester;
 import org.sonar.db.qualityprofile.QProfileDto;
 import org.sonar.db.qualityprofile.QualityProfileTesting;
+import org.sonar.server.qualityprofile.builtin.QProfileName;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -274,4 +274,6 @@ public interface UserSession {
    * otherwise throws {@link org.sonar.server.exceptions.ForbiddenException}.
    */
   UserSession checkIsSystemAdministrator();
+
+  boolean isActive();
 }

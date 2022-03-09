@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -55,13 +55,20 @@ public class CeQueueDao implements Dao {
   }
 
   public List<CeQueueDto> selectByQueryInDescOrder(DbSession dbSession, CeTaskQuery query, int pageSize) {
+    return selectByQueryInDescOrder(dbSession, query, 1, pageSize);
+  }
+
+  public List<CeQueueDto> selectByQueryInDescOrder(DbSession dbSession, CeTaskQuery query, int page, int pageSize) {
     if (query.isShortCircuitedByMainComponentUuids()
       || query.isOnlyCurrents()
       || query.getMaxExecutedAt() != null) {
       return emptyList();
     }
 
-    return mapper(dbSession).selectByQueryInDescOrder(query, new RowBounds(0, pageSize));
+    int offset = (page - 1) * pageSize;
+    int limit = page * pageSize;
+
+    return mapper(dbSession).selectByQueryInDescOrder(query, new RowBounds(offset, limit));
   }
 
   public int countByQuery(DbSession dbSession, CeTaskQuery query) {

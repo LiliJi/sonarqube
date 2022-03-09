@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@
 import { shallow } from 'enzyme';
 import * as React from 'react';
 import { mockMetric } from '../../../../helpers/testMocks';
-import MetricSelect from '../MetricSelect';
+import { MetricSelectComponent } from '../MetricSelect';
 
 it('should render correctly', () => {
   expect(shallowRender()).toMatchSnapshot();
@@ -29,14 +29,19 @@ it('should render correctly', () => {
 it('should correctly handle change', () => {
   const onMetricChange = jest.fn();
   const metric = mockMetric();
-  const metrics = [mockMetric({ key: 'duplication' }), metric];
-  const wrapper = shallowRender({ metrics, onMetricChange });
+  const metricsArray = [mockMetric({ key: 'duplication' }), metric];
+  const wrapper = shallowRender({ metricsArray, onMetricChange });
   wrapper.instance().handleChange({ label: metric.name, value: metric.key });
   expect(onMetricChange).toBeCalledWith(metric);
 });
 
-function shallowRender(props: Partial<MetricSelect['props']> = {}) {
-  return shallow<MetricSelect>(
-    <MetricSelect metrics={[mockMetric()]} onMetricChange={jest.fn()} {...props} />
+function shallowRender(props: Partial<MetricSelectComponent['props']> = {}) {
+  return shallow<MetricSelectComponent>(
+    <MetricSelectComponent
+      metricsArray={[mockMetric()]}
+      metrics={{}}
+      onMetricChange={jest.fn()}
+      {...props}
+    />
   );
 }

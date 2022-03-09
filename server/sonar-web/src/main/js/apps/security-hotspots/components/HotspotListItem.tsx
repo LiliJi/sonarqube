@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,28 +19,50 @@
  */
 import classNames from 'classnames';
 import * as React from 'react';
-import { translate } from '../../../helpers/l10n';
+import QualifierIcon from '../../../components/icons/QualifierIcon';
+import LocationsList from '../../../components/locations/LocationsList';
+import { ComponentQualifier } from '../../../types/component';
 import { RawHotspot } from '../../../types/security-hotspots';
-import { getStatusOptionFromStatusAndResolution } from '../utils';
+import { getFilePath, getLocations } from '../utils';
 
 export interface HotspotListItemProps {
   hotspot: RawHotspot;
   onClick: (hotspot: RawHotspot) => void;
+  onLocationClick: (index: number) => void;
+  onScroll: (element: Element) => void;
   selected: boolean;
+  selectedHotspotLocation?: number;
 }
 
 export default function HotspotListItem(props: HotspotListItemProps) {
-  const { hotspot, selected } = props;
+  const { hotspot, selected, selectedHotspotLocation } = props;
+  const locations = getLocations(hotspot.flows, undefined);
+  const path = getFilePath(hotspot.component, hotspot.project);
+
   return (
     <a
       className={classNames('hotspot-item', { highlight: selected })}
       href="#"
       onClick={() => !selected && props.onClick(hotspot)}>
-      <div className="little-spacer-left">{hotspot.message}</div>
-      <div className="badge spacer-top">
-        {translate(
-          'hotspots.status_option',
-          getStatusOptionFromStatusAndResolution(hotspot.status, hotspot.resolution)
+      <div className="little-spacer-left text-bold">{hotspot.message}</div>
+      <div className="display-flex-center">
+        <QualifierIcon qualifier={ComponentQualifier.File} />
+        <div
+          className="little-spacer-left hotspot-box-filename text-ellipsis big-spacer-top big-spacer-bottom"
+          title={path}>
+          {path}
+        </div>
+      </div>
+      <div className="spacer-top">
+        {selected && (
+          <LocationsList
+            locations={locations}
+            isCrossFile={false} // Currently we are not supporting cross file for security hotspot
+            uniqueKey={hotspot.key}
+            onLocationSelect={props.onLocationClick}
+            selectedLocationIndex={selectedHotspotLocation}
+            scroll={props.onScroll}
+          />
         )}
       </div>
     </a>

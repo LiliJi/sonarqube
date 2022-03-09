@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -82,6 +82,10 @@ public class CeActivityDao implements Dao {
     }
 
     return mapper(dbSession).selectByQuery(query, pagination);
+  }
+
+  public int countByQuery(DbSession dbSession, CeTaskQuery query) {
+    return mapper(dbSession).countByQuery(query);
   }
 
   public int countLastByStatusAndMainComponentUuid(DbSession dbSession, CeActivityDto.Status status, @Nullable String mainComponentUuid) {

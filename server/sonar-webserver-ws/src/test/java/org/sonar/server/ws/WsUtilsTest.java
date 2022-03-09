@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -43,7 +43,7 @@ public class WsUtilsTest {
     Issues.Issue msg = Issues.Issue.newBuilder().setKey("I1").build();
     WsUtils.writeProtobuf(msg, request, response);
 
-    assertThat(response.stream().mediaType()).isEqualTo(MediaTypes.JSON);
+    assertThat(response.mediaType()).isEqualTo(MediaTypes.JSON);
     assertThat(response.outputAsString())
       .startsWith("{")
       .contains("\"key\":\"I1\"")
@@ -59,7 +59,7 @@ public class WsUtilsTest {
     Issues.Issue msg = Issues.Issue.newBuilder().setKey("I1").build();
     WsUtils.writeProtobuf(msg, request, response);
 
-    assertThat(response.stream().mediaType()).isEqualTo(MediaTypes.PROTOBUF);
+    assertThat(response.mediaType()).isEqualTo(MediaTypes.PROTOBUF);
     assertThat(Issues.Issue.parseFrom(response.getFlushedOutput()).getKey()).isEqualTo("I1");
   }
 

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -40,13 +40,6 @@ import static com.google.common.base.Preconditions.checkState;
 public class BranchSupport {
   @CheckForNull
   private final BranchSupportDelegate delegate;
-
-  /**
-   * Constructor called by Pico when no implementation of {@link BranchSupportDelegate} is available.
-   */
-  public BranchSupport() {
-    this(null);
-  }
 
   public BranchSupport(@Nullable BranchSupportDelegate delegate) {
     this.delegate = delegate;

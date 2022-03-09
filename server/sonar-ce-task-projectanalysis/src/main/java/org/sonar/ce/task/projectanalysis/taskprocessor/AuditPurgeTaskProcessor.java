@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -31,17 +31,18 @@ import org.sonar.ce.task.projectanalysis.step.AbstractComputationSteps;
 import org.sonar.ce.task.step.ComputationStep;
 import org.sonar.ce.task.step.ComputationStepExecutor;
 import org.sonar.ce.task.taskprocessor.CeTaskProcessor;
-import org.sonar.core.platform.ComponentContainer;
+import org.sonar.core.platform.Container;
 import org.sonar.core.platform.ContainerPopulator;
+import org.sonar.core.platform.SpringComponentContainer;
 
 import static org.sonar.db.ce.CeTaskTypes.AUDIT_PURGE;
 
 public class AuditPurgeTaskProcessor implements CeTaskProcessor {
   private static final Set<String> HANDLED_TYPES = Set.of(AUDIT_PURGE);
 
-  private final ComponentContainer ceEngineContainer;
+  private final SpringComponentContainer ceEngineContainer;
 
-  public AuditPurgeTaskProcessor(ComponentContainer ceEngineContainer) {
+  public AuditPurgeTaskProcessor(SpringComponentContainer ceEngineContainer) {
     this.ceEngineContainer = ceEngineContainer;
   }
 
@@ -72,7 +73,7 @@ public class AuditPurgeTaskProcessor implements CeTaskProcessor {
 
   public static final class AuditPurgeComputationSteps extends AbstractComputationSteps {
 
-    public AuditPurgeComputationSteps(ContainerPopulator.Container container) {
+    public AuditPurgeComputationSteps(Container container) {
       super(container);
     }
 

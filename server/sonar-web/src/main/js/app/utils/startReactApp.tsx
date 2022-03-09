@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -62,6 +62,7 @@ import { lazyLoadComponent } from '../../components/lazyLoadComponent';
 import getHistory from '../../helpers/getHistory';
 import { AppState, CurrentUser } from '../../types/types';
 import App from '../components/App';
+import AppStateContextProvider from '../components/app-state/AppStateContextProvider';
 import GlobalContainer from '../components/GlobalContainer';
 import { PageContext } from '../components/indexation/PageUnavailableDueToIndexation';
 import MigrationContainer from '../components/MigrationContainer';
@@ -85,7 +86,7 @@ function handleUpdate(this: { state: { location: Location } }) {
 }
 
 // this is not an official api
-const RouteWithChildRoutes = Route as React.ComponentClass<
+export const RouteWithChildRoutes = Route as React.ComponentClass<
   RouteProps & { childRoutes: RouteConfig }
 >;
 
@@ -278,107 +279,107 @@ function renderAdminRoutes() {
   );
 }
 
-export default function startReactApp(
-  lang: string,
-  currentUser?: CurrentUser,
-  appState?: AppState
-) {
+export default function startReactApp(lang: string, appState: AppState, currentUser?: CurrentUser) {
   attachToGlobal();
 
   const el = document.getElementById('content');
 
   const history = getHistory();
-  const store = getStore(currentUser, appState);
+  const store = getStore(currentUser);
 
   render(
     <HelmetProvider>
       <Provider store={store}>
-        <IntlProvider defaultLocale={lang} locale={lang}>
-          <Router history={history} onUpdate={handleUpdate}>
-            {renderRedirects()}
+        <AppStateContextProvider appState={appState}>
+          <IntlProvider defaultLocale={lang} locale={lang}>
+            <Router history={history} onUpdate={handleUpdate}>
+              {renderRedirects()}
 
-            <Route
-              path="formatting/help"
-              component={lazyLoadComponent(() => import('../components/FormattingHelp'))}
-            />
-
-            <Route component={lazyLoadComponent(() => import('../components/SimpleContainer'))}>
-              <Route path="maintenance">{maintenanceRoutes}</Route>
-              <Route path="setup">{setupRoutes}</Route>
-            </Route>
-
-            <Route component={MigrationContainer}>
               <Route
-                component={lazyLoadComponent(() =>
-                  import('../components/SimpleSessionsContainer')
-                )}>
-                <RouteWithChildRoutes path="/sessions" childRoutes={sessionsRoutes} />
+                path="formatting/help"
+                component={lazyLoadComponent(() => import('../components/FormattingHelp'))}
+              />
+
+              <Route component={lazyLoadComponent(() => import('../components/SimpleContainer'))}>
+                <Route path="maintenance">{maintenanceRoutes}</Route>
+                <Route path="setup">{setupRoutes}</Route>
               </Route>
 
-              <Route path="/" component={App}>
-                <IndexRoute component={lazyLoadComponent(() => import('../components/Landing'))} />
-
-                <Route component={GlobalContainer}>
-                  <RouteWithChildRoutes path="account" childRoutes={accountRoutes} />
-                  <RouteWithChildRoutes path="coding_rules" childRoutes={codingRulesRoutes} />
-                  <RouteWithChildRoutes path="documentation" childRoutes={documentationRoutes} />
-                  <Route
-                    path="extension/:pluginKey/:extensionKey"
-                    component={lazyLoadComponent(() =>
-                      import('../components/extensions/GlobalPageExtension')
-                    )}
-                  />
-                  <Route
-                    path="issues"
-                    component={withIndexationGuard(Issues, PageContext.Issues)}
-                  />
-                  <RouteWithChildRoutes path="projects" childRoutes={projectsRoutes} />
-                  <RouteWithChildRoutes path="quality_gates" childRoutes={qualityGatesRoutes} />
-                  <Route
-                    path="portfolios"
-                    component={lazyLoadComponent(() =>
-                      import('../components/extensions/PortfoliosPage')
-                    )}
-                  />
-                  <RouteWithChildRoutes path="profiles" childRoutes={qualityProfilesRoutes} />
-                  <RouteWithChildRoutes path="web_api" childRoutes={webAPIRoutes} />
-
-                  {renderComponentRoutes()}
-
-                  {renderAdminRoutes()}
-                </Route>
+              <Route component={MigrationContainer}>
                 <Route
-                  // We don't want this route to have any menu.
-                  // That is why we can not have it under the accountRoutes
-                  path="account/reset_password"
-                  component={lazyLoadComponent(() => import('../components/ResetPassword'))}
-                />
-                <Route
-                  // We don't want this route to have any menu. This is why we define it here
-                  // rather than under the admin routes.
-                  path="admin/change_admin_password"
                   component={lazyLoadComponent(() =>
-                    import('../../apps/change-admin-password/ChangeAdminPasswordApp')
-                  )}
-                />
-                <Route
-                  // We don't want this route to have any menu. This is why we define it here
-                  // rather than under the admin routes.
-                  path="admin/plugin_risk_consent"
-                  component={lazyLoadComponent(() => import('../components/PluginRiskConsent'))}
-                />
-                <Route
-                  path="not_found"
-                  component={lazyLoadComponent(() => import('../components/NotFound'))}
-                />
-                <Route
-                  path="*"
-                  component={lazyLoadComponent(() => import('../components/NotFound'))}
-                />
+                    import('../components/SimpleSessionsContainer')
+                  )}>
+                  <RouteWithChildRoutes path="/sessions" childRoutes={sessionsRoutes} />
+                </Route>
+
+                <Route path="/" component={App}>
+                  <IndexRoute
+                    component={lazyLoadComponent(() => import('../components/Landing'))}
+                  />
+
+                  <Route component={GlobalContainer}>
+                    <RouteWithChildRoutes path="account" childRoutes={accountRoutes} />
+                    <RouteWithChildRoutes path="coding_rules" childRoutes={codingRulesRoutes} />
+                    <RouteWithChildRoutes path="documentation" childRoutes={documentationRoutes} />
+                    <Route
+                      path="extension/:pluginKey/:extensionKey"
+                      component={lazyLoadComponent(() =>
+                        import('../components/extensions/GlobalPageExtension')
+                      )}
+                    />
+                    <Route
+                      path="issues"
+                      component={withIndexationGuard(Issues, PageContext.Issues)}
+                    />
+                    <RouteWithChildRoutes path="projects" childRoutes={projectsRoutes} />
+                    <RouteWithChildRoutes path="quality_gates" childRoutes={qualityGatesRoutes} />
+                    <Route
+                      path="portfolios"
+                      component={lazyLoadComponent(() =>
+                        import('../components/extensions/PortfoliosPage')
+                      )}
+                    />
+                    <RouteWithChildRoutes path="profiles" childRoutes={qualityProfilesRoutes} />
+                    <RouteWithChildRoutes path="web_api" childRoutes={webAPIRoutes} />
+
+                    {renderComponentRoutes()}
+
+                    {renderAdminRoutes()}
+                  </Route>
+                  <Route
+                    // We don't want this route to have any menu.
+                    // That is why we can not have it under the accountRoutes
+                    path="account/reset_password"
+                    component={lazyLoadComponent(() => import('../components/ResetPassword'))}
+                  />
+                  <Route
+                    // We don't want this route to have any menu. This is why we define it here
+                    // rather than under the admin routes.
+                    path="admin/change_admin_password"
+                    component={lazyLoadComponent(() =>
+                      import('../../apps/change-admin-password/ChangeAdminPasswordApp')
+                    )}
+                  />
+                  <Route
+                    // We don't want this route to have any menu. This is why we define it here
+                    // rather than under the admin routes.
+                    path="admin/plugin_risk_consent"
+                    component={lazyLoadComponent(() => import('../components/PluginRiskConsent'))}
+                  />
+                  <Route
+                    path="not_found"
+                    component={lazyLoadComponent(() => import('../components/NotFound'))}
+                  />
+                  <Route
+                    path="*"
+                    component={lazyLoadComponent(() => import('../components/NotFound'))}
+                  />
+                </Route>
               </Route>
-            </Route>
-          </Router>
-        </IntlProvider>
+            </Router>
+          </IntlProvider>
+        </AppStateContextProvider>
       </Provider>
     </HelmetProvider>,
     el

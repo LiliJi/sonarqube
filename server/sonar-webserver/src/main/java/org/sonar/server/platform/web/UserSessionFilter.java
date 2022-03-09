@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -58,7 +58,7 @@ public class UserSessionFilter implements Filter {
 
     DBSessions dbSessions = platform.getContainer().getComponentByType(DBSessions.class);
     ThreadLocalSettings settings = platform.getContainer().getComponentByType(ThreadLocalSettings.class);
-    UserSessionInitializer userSessionInitializer = platform.getContainer().getComponentByType(UserSessionInitializer.class);
+    UserSessionInitializer userSessionInitializer = platform.getContainer().getOptionalComponentByType(UserSessionInitializer.class).orElse(null);
 
     LOG.trace("{} serves {}", Thread.currentThread(), request.getRequestURI());
     dbSessions.enableCaching();

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -42,8 +42,11 @@ export interface HotspotSimpleListProps {
   hotspotsTotal: number;
   loadingMore: boolean;
   onHotspotClick: (hotspot: RawHotspot) => void;
+  onLocationClick: (index: number) => void;
+  onScroll: (element: Element) => void;
   onLoadMore: () => void;
   selectedHotspot: RawHotspot;
+  selectedHotspotLocation?: number;
   standards: Standards;
 }
 
@@ -65,6 +68,7 @@ export default class HotspotSimpleList extends React.Component<HotspotSimpleList
       hotspotsTotal,
       loadingMore,
       selectedHotspot,
+      selectedHotspotLocation,
       standards
     } = this.props;
 
@@ -110,7 +114,10 @@ export default class HotspotSimpleList extends React.Component<HotspotSimpleList
                   <HotspotListItem
                     hotspot={h}
                     onClick={this.props.onHotspotClick}
+                    onLocationClick={this.props.onLocationClick}
+                    onScroll={this.props.onScroll}
                     selected={h.key === selectedHotspot.key}
+                    selectedHotspotLocation={selectedHotspotLocation}
                   />
                 </li>
               ))}

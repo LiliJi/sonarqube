@@ -7,6 +7,7 @@ module.exports = {
       diagnostics: false
     }
   },
+  maxWorkers: 4,
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
   moduleNameMapper: {
     '^.+\\.(md|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
@@ -20,7 +21,9 @@ module.exports = {
     '<rootDir>/config/jest/SetupEnzyme.js',
     '<rootDir>/config/jest/SetupTestEnvironment.ts'
   ],
+  setupFilesAfterEnv: ['<rootDir>/config/jest/SetupReactTestingLibrary.js'],
   snapshotSerializers: ['enzyme-to-json/serializer', 'jest-emotion'],
+  testEnvironment: 'jsdom',
   testPathIgnorePatterns: ['<rootDir>/config', '<rootDir>/node_modules', '<rootDir>/scripts'],
   testRegex: '(/__tests__/.*|\\-test)\\.(ts|tsx|js)$',
   transform: {

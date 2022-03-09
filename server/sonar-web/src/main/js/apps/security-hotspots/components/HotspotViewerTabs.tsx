@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,15 +17,18 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+import classNames from 'classnames';
 import * as React from 'react';
 import BoxedTabs from '../../../components/controls/BoxedTabs';
-import Tab from '../../../components/controls/Tabs';
+import { KeyboardCodes } from '../../../helpers/keycodes';
 import { translate } from '../../../helpers/l10n';
 import { sanitizeString } from '../../../helpers/sanitize';
 import { Hotspot } from '../../../types/security-hotspots';
 
 interface Props {
+  codeTabContent: React.ReactNode;
   hotspot: Hotspot;
+  selectedHotspotLocation?: number;
 }
 
 interface State {
@@ -40,6 +43,7 @@ interface Tab {
 }
 
 export enum TabKeys {
+  Code = 'code',
   RiskDescription = 'risk',
   VulnerabilityDescription = 'vulnerability',
   FixRecommendation = 'fix'
@@ -55,6 +59,10 @@ export default class HotspotViewerTabs extends React.PureComponent<Props, State>
     };
   }
 
+  componentDidMount() {
+    this.registerKeyboardEvents();
+  }
+
   componentDidUpdate(prevProps: Props) {
     if (this.props.hotspot.key !== prevProps.hotspot.key) {
       const tabs = this.computeTabs();
@@ -62,7 +70,37 @@ export default class HotspotViewerTabs extends React.PureComponent<Props, State>
         currentTab: tabs[0],
         tabs
       });
+    } else if (
+      this.props.selectedHotspotLocation !== undefined &&
+      this.props.selectedHotspotLocation !== prevProps.selectedHotspotLocation
+    ) {
+      const { tabs } = this.state;
+      this.setState({
+        currentTab: tabs[0]
+      });
     }
+  }
+
+  componentWillUnmount() {
+    this.unregisterKeyboardEvents();
+  }
+
+  handleKeyboardNavigation = (event: KeyboardEvent) => {
+    if (event.code === KeyboardCodes.LeftArrow) {
+      event.preventDefault();
+      this.selectNeighboringTab(-1);
+    } else if (event.code === KeyboardCodes.RightArrow) {
+      event.preventDefault();
+      this.selectNeighboringTab(+1);
+    }
+  };
+
+  registerKeyboardEvents() {
+    window.addEventListener('keydown', this.handleKeyboardNavigation);
+  }
+
+  unregisterKeyboardEvents() {
+    window.removeEventListener('keydown', this.handleKeyboardNavigation);
   }
 
   handleSelectTabs = (tabKey: TabKeys) => {
@@ -73,7 +111,8 @@ export default class HotspotViewerTabs extends React.PureComponent<Props, State>
 
   computeTabs() {
     const { hotspot } = this.props;
-    return [
+
+    const descriptionTabs = [
       {
         key: TabKeys.RiskDescription,
         label: translate('hotspots.tabs.risk_description'),
@@ -89,24 +128,57 @@ export default class HotspotViewerTabs extends React.PureComponent<Props, State>
         label: translate('hotspots.tabs.fix_recommendations'),
         content: hotspot.rule.fixRecommendations || ''
       }
-    ].filter(tab => Boolean(tab.content));
+    ].filter(tab => tab.content.length > 0);
+
+    return [
+      {
+        key: TabKeys.Code,
+        label: translate('hotspots.tabs.code'),
+        content: ''
+      },
+      ...descriptionTabs
+    ];
+  }
+
+  selectNeighboringTab(shift: number) {
+    this.setState(({ tabs, currentTab }) => {
+      const index = currentTab && tabs.findIndex(tab => tab.key === currentTab.key);
+
+      if (index !== undefined && index > -1) {
+        const newIndex = Math.max(0, Math.min(tabs.length - 1, index + shift));
+        return {
+          currentTab: tabs[newIndex]
+        };
+      }
+
+      return { currentTab };
+    });
   }
 
   render() {
+    const { codeTabContent } = this.props;
     const { tabs, currentTab } = this.state;
-    if (tabs.length === 0) {
-      return null;
-    }
 
     return (
       <>
         <BoxedTabs onSelect={this.handleSelectTabs} selected={currentTab.key} tabs={tabs} />
         <div className="bordered huge-spacer-bottom">
           <div
-            className="markdown big-padded"
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{ __html: sanitizeString(currentTab.content) }}
-          />
+            className={classNames('padded', {
+              hidden: currentTab.key !== TabKeys.Code
+            })}>
+            {codeTabContent}
+          </div>
+          {tabs.slice(1).map(tab => (
+            <div
+              key={tab.key}
+              className={classNames('markdown big-padded', {
+                hidden: currentTab.key !== tab.key
+              })}
+              // eslint-disable-next-line react/no-danger
+              dangerouslySetInnerHTML={{ __html: sanitizeString(currentTab.content) }}
+            />
+          ))}
         </div>
       </>
     );

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,8 +19,9 @@
  */
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { getAppState, getGlobalSettingValue, Store } from '../../../store/rootReducer';
+import { getGlobalSettingValue, Store } from '../../../store/rootReducer';
 import { AdminPageExtension } from '../../../types/extension';
+import { Extension } from '../../../types/types';
 import { fetchValues } from '../../settings/store/actions';
 import '../style.css';
 import { HousekeepingPolicy, RangeOption } from '../utils';
@@ -29,25 +30,45 @@ import AuditAppRenderer from './AuditAppRenderer';
 interface Props {
   auditHousekeepingPolicy: HousekeepingPolicy;
   fetchValues: typeof fetchValues;
-  hasGovernanceExtension?: boolean;
+  adminPages: Extension[];
 }
 
 interface State {
   dateRange?: { from?: Date; to?: Date };
+  hasGovernanceExtension?: boolean;
   downloadStarted: boolean;
   selection: RangeOption;
 }
 
 export class AuditApp extends React.PureComponent<Props, State> {
-  state: State = {
-    downloadStarted: false,
-    selection: RangeOption.Today
-  };
+  constructor(props: Props) {
+    super(props);
+    const hasGovernanceExtension = Boolean(
+      props.adminPages?.find(e => e.key === AdminPageExtension.GovernanceConsole)
+    );
+    this.state = {
+      downloadStarted: false,
+      selection: RangeOption.Today,
+      hasGovernanceExtension
+    };
+  }
 
   componentDidMount() {
-    const { hasGovernanceExtension } = this.props;
+    const { hasGovernanceExtension } = this.state;
+
     if (hasGovernanceExtension) {
       this.props.fetchValues(['sonar.dbcleaner.auditHousekeeping']);
+    }
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.adminPages !== this.props.adminPages) {
+      const hasGovernanceExtension = Boolean(
+        this.props.adminPages?.find(e => e.key === AdminPageExtension.GovernanceConsole)
+      );
+      this.setState({
+        hasGovernanceExtension
+      });
     }
   }
 
@@ -64,17 +85,22 @@ export class AuditApp extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { hasGovernanceExtension, auditHousekeepingPolicy } = this.props;
+    const { hasGovernanceExtension, ...auditAppRendererProps } = this.state;
+    const { auditHousekeepingPolicy } = this.props;
 
-    return hasGovernanceExtension ? (
+    if (!hasGovernanceExtension) {
+      return null;
+    }
+
+    return (
       <AuditAppRenderer
         handleDateSelection={this.handleDateSelection}
         handleOptionSelection={this.handleOptionSelection}
         handleStartDownload={this.handleStartDownload}
         housekeepingPolicy={auditHousekeepingPolicy || HousekeepingPolicy.Monthly}
-        {...this.state}
+        {...auditAppRendererProps}
       />
-    ) : null;
+    );
   }
 }
 
@@ -82,13 +108,8 @@ const mapDispatchToProps = { fetchValues };
 
 const mapStateToProps = (state: Store) => {
   const settingValue = getGlobalSettingValue(state, 'sonar.dbcleaner.auditHousekeeping');
-  const { adminPages } = getAppState(state);
-  const hasGovernanceExtension = Boolean(
-    adminPages?.find(e => e.key === AdminPageExtension.GovernanceConsole)
-  );
   return {
-    auditHousekeepingPolicy: settingValue?.value as HousekeepingPolicy,
-    hasGovernanceExtension
+    auditHousekeepingPolicy: settingValue?.value as HousekeepingPolicy
   };
 };
 

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -89,7 +89,7 @@ public class ReportSubmitterTest {
   private final PermissionTemplateService permissionTemplateService = mock(PermissionTemplateService.class);
   private final ComponentUpdater componentUpdater = new ComponentUpdater(db.getDbClient(), mock(I18n.class), mock(System2.class), permissionTemplateService,
     new FavoriteUpdater(db.getDbClient()), projectIndexers, new SequenceUuidFactory());
-  private final BranchSupport ossEditionBranchSupport = new BranchSupport();
+  private final BranchSupport ossEditionBranchSupport = new BranchSupport(null);
 
   private final ReportSubmitter underTest = new ReportSubmitter(queue, userSession, componentUpdater, permissionTemplateService, db.getDbClient(), ossEditionBranchSupport,
     projectDefaultVisibility);

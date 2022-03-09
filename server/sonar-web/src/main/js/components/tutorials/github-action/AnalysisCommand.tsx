@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -18,8 +18,8 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 import * as React from 'react';
+import withAppStateContext from '../../../app/components/app-state/withAppStateContext';
 import { AppState, Component } from '../../../types/types';
-import { withAppState } from '../../hoc/withAppState';
 import { BuildTools } from '../types';
 import CFamily from './commands/CFamily';
 import DotNet from './commands/DotNet';
@@ -70,4 +70,4 @@ export function AnalysisCommand(props: AnalysisCommandProps) {
   return null;
 }
 
-export default withAppState(AnalysisCommand);
+export default withAppStateContext(AnalysisCommand);

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -17,18 +17,40 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-import { shallow } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import * as React from 'react';
-import BoxedTabs from '../../../../components/controls/BoxedTabs';
+import BoxedTabs, { BoxedTabsProps } from '../../../../components/controls/BoxedTabs';
+import { KeyboardCodes } from '../../../../helpers/keycodes';
 import { mockHotspot, mockHotspotRule } from '../../../../helpers/mocks/security-hotspots';
-import { mockUser } from '../../../../helpers/testMocks';
+import { mockEvent, mockUser } from '../../../../helpers/testMocks';
 import HotspotViewerTabs, { TabKeys } from '../HotspotViewerTabs';
+
+const originalAddEventListener = window.addEventListener;
+const originalRemoveEventListener = window.removeEventListener;
+
+beforeEach(() => {
+  Object.defineProperty(window, 'addEventListener', {
+    value: jest.fn()
+  });
+  Object.defineProperty(window, 'removeEventListener', {
+    value: jest.fn()
+  });
+});
+
+afterEach(() => {
+  Object.defineProperty(window, 'addEventListener', {
+    value: originalAddEventListener
+  });
+  Object.defineProperty(window, 'removeEventListener', {
+    value: originalRemoveEventListener
+  });
+});
 
 it('should render correctly', () => {
   const wrapper = shallowRender();
   expect(wrapper).toMatchSnapshot('risk');
 
-  const onSelect = wrapper.find(BoxedTabs).prop('onSelect') as (tab: TabKeys) => void;
+  const onSelect: (tab: TabKeys) => void = wrapper.find(BoxedTabs).prop('onSelect');
 
   onSelect(TabKeys.VulnerabilityDescription);
   expect(wrapper).toMatchSnapshot('vulnerability');
@@ -46,8 +68,10 @@ it('should render correctly', () => {
           vulnerabilityDescription: undefined
         })
       })
-    }).type()
-  ).toBeNull();
+    })
+      .find<BoxedTabsProps<string>>(BoxedTabs)
+      .props().tabs
+  ).toHaveLength(1);
 
   expect(
     shallowRender({
@@ -86,14 +110,71 @@ it('should filter empty tab', () => {
 
 it('should select first tab on hotspot update', () => {
   const wrapper = shallowRender();
-  const onSelect = wrapper.find(BoxedTabs).prop('onSelect') as (tab: TabKeys) => void;
+  const onSelect: (tab: TabKeys) => void = wrapper.find(BoxedTabs).prop('onSelect');
 
   onSelect(TabKeys.VulnerabilityDescription);
   expect(wrapper.state().currentTab.key).toBe(TabKeys.VulnerabilityDescription);
   wrapper.setProps({ hotspot: mockHotspot({ key: 'new_key' }) });
-  expect(wrapper.state().currentTab.key).toBe(TabKeys.RiskDescription);
+  expect(wrapper.state().currentTab.key).toBe(TabKeys.Code);
+});
+
+it('should select first tab when hotspot location is selected and is not undefined', () => {
+  const wrapper = shallowRender();
+  const onSelect: (tab: TabKeys) => void = wrapper.find(BoxedTabs).prop('onSelect');
+
+  onSelect(TabKeys.VulnerabilityDescription);
+  expect(wrapper.state().currentTab.key).toBe(TabKeys.VulnerabilityDescription);
+
+  wrapper.setProps({ selectedHotspotLocation: 1 });
+  expect(wrapper.state().currentTab.key).toBe(TabKeys.Code);
+
+  onSelect(TabKeys.VulnerabilityDescription);
+  expect(wrapper.state().currentTab.key).toBe(TabKeys.VulnerabilityDescription);
+
+  wrapper.setProps({ selectedHotspotLocation: undefined });
+  expect(wrapper.state().currentTab.key).toBe(TabKeys.VulnerabilityDescription);
+});
+
+describe('keyboard navigation', () => {
+  const tabList = [
+    TabKeys.Code,
+    TabKeys.RiskDescription,
+    TabKeys.VulnerabilityDescription,
+    TabKeys.FixRecommendation
+  ];
+  const wrapper = shallowRender();
+
+  it.each([
+    ['selecting next', 0, KeyboardCodes.RightArrow, 1],
+    ['selecting previous', 1, KeyboardCodes.LeftArrow, 0],
+    ['selecting previous, non-existent', 0, KeyboardCodes.LeftArrow, 0],
+    ['selecting next, non-existent', 3, KeyboardCodes.RightArrow, 3]
+  ])('should work when %s', (_, start, code, expected) => {
+    wrapper.setState({ currentTab: wrapper.state().tabs[start] });
+    wrapper.instance().handleKeyboardNavigation(mockEvent({ code }));
+
+    expect(wrapper.state().currentTab.key).toBe(tabList[expected]);
+  });
+});
+
+it('should navigate when up and down key are pressed', () => {
+  const wrapper = mount<HotspotViewerTabs>(
+    <HotspotViewerTabs codeTabContent={<div>CodeTabContent</div>} hotspot={mockHotspot()} />
+  );
+
+  expect(window.addEventListener).toBeCalled();
+
+  wrapper.unmount();
+
+  expect(window.removeEventListener).toBeCalled();
 });
 
 function shallowRender(props?: Partial<HotspotViewerTabs['props']>) {
-  return shallow<HotspotViewerTabs>(<HotspotViewerTabs hotspot={mockHotspot()} {...props} />);
+  return shallow<HotspotViewerTabs>(
+    <HotspotViewerTabs
+      codeTabContent={<div>CodeTabContent</div>}
+      hotspot={mockHotspot()}
+      {...props}
+    />
+  );
 }

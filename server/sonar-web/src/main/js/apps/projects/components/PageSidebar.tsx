@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@ import { translate } from '../../../helpers/l10n';
 import { RawQuery } from '../../../types/types';
 import CoverageFilter from '../filters/CoverageFilter';
 import DuplicationsFilter from '../filters/DuplicationsFilter';
-import LanguagesFilterContainer from '../filters/LanguagesFilterContainer';
+import LanguagesFilter from '../filters/LanguagesFilter';
 import MaintainabilityFilter from '../filters/MaintainabilityFilter';
 import NewCoverageFilter from '../filters/NewCoverageFilter';
 import NewDuplicationsFilter from '../filters/NewDuplicationsFilter';
@@ -50,11 +50,10 @@ export interface PageSidebarProps {
   onQueryChange: (change: RawQuery) => void;
   query: RawQuery;
   view: string;
-  visualization: string;
 }
 
 export default function PageSidebar(props: PageSidebarProps) {
-  const { applicationsEnabled, facets, onQueryChange, query, view, visualization } = props;
+  const { applicationsEnabled, facets, onQueryChange, query, view } = props;
   const isFiltered = hasFilterParams(query);
   const isLeakView = view === 'leak';
   const maxFacetValue = getMaxFacetValue(facets);
@@ -63,10 +62,6 @@ export default function PageSidebar(props: PageSidebarProps) {
   let linkQuery: RawQuery | undefined = undefined;
   if (view !== 'overall') {
     linkQuery = { view };
-
-    if (view === 'visualizations') {
-      linkQuery.visualization = visualization;
-    }
   }
 
   return (
@@ -157,7 +152,7 @@ export default function PageSidebar(props: PageSidebarProps) {
           />
         </>
       )}
-      <LanguagesFilterContainer
+      <LanguagesFilter
         {...facetProps}
         facet={getFacet(facets, 'languages')}
         query={query}

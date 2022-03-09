@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@ import * as React from 'react';
 import { BranchLike } from '../../../types/branch-like';
 import { Issue, LinearIssueLocation, SourceLine } from '../../../types/types';
 import LocationIndex from '../../common/LocationIndex';
-import LocationMessage from '../../common/LocationMessage';
+import Tooltip from '../../controls/Tooltip';
 import {
   highlightIssueLocations,
   highlightSymbol,
@@ -32,6 +32,7 @@ import {
 import LineIssuesList from './LineIssuesList';
 
 interface Props {
+  additionalChild?: React.ReactNode;
   branchLike: BranchLike | undefined;
   displayIssueLocationsCount?: boolean;
   displayIssueLocationsLink?: boolean;
@@ -140,20 +141,23 @@ export default class LineCode extends React.PureComponent<Props, State> {
     const { onLocationSelect } = this.props;
     const onClick = onLocationSelect ? () => onLocationSelect(index) : undefined;
     const ref = selected ? (node: HTMLElement | null) => (this.activeMarkerNode = node) : undefined;
+
     return (
-      <LocationIndex
-        key={`marker-${index}`}
-        leading={leading}
-        onClick={onClick}
-        selected={selected}>
-        <span ref={ref}>{index + 1}</span>
-        {message && <LocationMessage selected={true}>{message}</LocationMessage>}
-      </LocationIndex>
+      <Tooltip key={`marker-${index}`} overlay={message} placement="top">
+        <LocationIndex
+          leading={leading}
+          onClick={onClick}
+          selected={selected}
+          aria-label={message ? `${index + 1}-${message}` : index + 1}>
+          <span ref={ref}>{index + 1}</span>
+        </LocationIndex>
+      </Tooltip>
     );
   }
 
   render() {
     const {
+      additionalChild,
       highlightedLocationMessage,
       highlightedSymbols,
       issues,
@@ -253,6 +257,7 @@ export default class LineCode extends React.PureComponent<Props, State> {
             selectedIssue={selectedIssue}
           />
         )}
+        {additionalChild}
       </td>
     );
   }

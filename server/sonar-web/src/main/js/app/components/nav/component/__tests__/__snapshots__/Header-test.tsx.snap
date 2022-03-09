@@ -5,6 +5,7 @@ exports[`should render correctly 1`] = `
   <Helmet
     defer={true}
     encodeSpecialCharacters={true}
+    prioritizeSeoTags={false}
     title="MyProject"
   />
   <header
@@ -48,7 +49,7 @@ exports[`should render correctly 1`] = `
       favorite={false}
       qualifier="TRK"
     />
-    <Connect(withAppState(Component))
+    <withAppStateContext(Component)
       branchLikes={
         Array [
           Object {

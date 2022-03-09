@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,8 @@ import * as React from 'react';
 import HelpTooltip from '../../../components/controls/HelpTooltip';
 import { Alert } from '../../../components/ui/Alert';
 import { translate, translateWithParameters } from '../../../helpers/l10n';
-import { Dict, Language } from '../../../types/types';
+import { Language } from '../../../types/languages';
+import { Dict } from '../../../types/types';
 import { Profile } from '../types';
 import ProfilesListHeader from './ProfilesListHeader';
 import ProfilesListRow from './ProfilesListRow';

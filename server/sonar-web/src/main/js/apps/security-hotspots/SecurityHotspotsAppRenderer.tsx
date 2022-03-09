@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -56,11 +56,14 @@ export interface SecurityHotspotsAppRendererProps {
   loadingMore: boolean;
   onChangeFilters: (filters: Partial<HotspotFilters>) => void;
   onHotspotClick: (hotspot: RawHotspot) => void;
+  onLocationClick: (index: number) => void;
   onLoadMore: () => void;
   onShowAllHotspots: () => void;
   onSwitchStatusFilter: (option: HotspotStatusFilter) => void;
   onUpdateHotspot: (hotspotKey: string) => Promise<void>;
-  selectedHotspot: RawHotspot | undefined;
+  onScroll: (element: Element) => void;
+  selectedHotspot?: RawHotspot;
+  selectedHotspotLocation?: number;
   securityCategories: StandardSecurityCategories;
   standards: Standards;
 }
@@ -82,6 +85,7 @@ export default function SecurityHotspotsAppRenderer(props: SecurityHotspotsAppRe
     loadingMore,
     securityCategories,
     selectedHotspot,
+    selectedHotspotLocation,
     standards
   } = props;
 
@@ -148,6 +152,9 @@ export default function SecurityHotspotsAppRenderer(props: SecurityHotspotsAppRe
                         loadingMore={loadingMore}
                         onHotspotClick={props.onHotspotClick}
                         onLoadMore={props.onLoadMore}
+                        onLocationClick={props.onLocationClick}
+                        onScroll={props.onScroll}
+                        selectedHotspotLocation={selectedHotspotLocation}
                         selectedHotspot={selectedHotspot}
                         standards={standards}
                       />
@@ -159,9 +166,12 @@ export default function SecurityHotspotsAppRenderer(props: SecurityHotspotsAppRe
                         loadingMore={loadingMore}
                         onHotspotClick={props.onHotspotClick}
                         onLoadMore={props.onLoadMore}
+                        onLocationClick={props.onLocationClick}
                         securityCategories={securityCategories}
                         selectedHotspot={selectedHotspot}
+                        selectedHotspotLocation={selectedHotspotLocation}
                         statusFilter={filters.status}
+                        onScroll={props.onScroll}
                       />
                     )}
                   </div>
@@ -171,13 +181,13 @@ export default function SecurityHotspotsAppRenderer(props: SecurityHotspotsAppRe
 
             <div className="layout-page-main">
               <HotspotViewer
-                branchLike={branchLike}
                 component={component}
                 hotspotKey={selectedHotspot.key}
                 hotspotsReviewedMeasure={hotspotsReviewedMeasure}
                 onSwitchStatusFilter={props.onSwitchStatusFilter}
                 onUpdateHotspot={props.onUpdateHotspot}
-                securityCategories={securityCategories}
+                onLocationClick={props.onLocationClick}
+                selectedHotspotLocation={selectedHotspotLocation}
               />
             </div>
           </div>

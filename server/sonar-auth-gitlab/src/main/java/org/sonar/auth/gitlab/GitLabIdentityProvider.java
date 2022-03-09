@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -65,7 +65,7 @@ public class GitLabIdentityProvider implements OAuth2IdentityProvider {
   @Override
   public Display getDisplay() {
     return Display.builder()
-      .setIconPath("/images/gitlab-icon-rgb.svg")
+      .setIconPath("/images/alm/gitlab.svg")
       .setBackgroundColor("#6a4fbb")
       .build();
   }

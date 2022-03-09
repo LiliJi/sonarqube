@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -146,6 +146,8 @@ function shallowRender(props: Partial<SecurityHotspotsAppRendererProps> = {}) {
       onShowAllHotspots={jest.fn()}
       onSwitchStatusFilter={jest.fn()}
       onUpdateHotspot={jest.fn()}
+      onLocationClick={jest.fn()}
+      onScroll={jest.fn()}
       securityCategories={{}}
       selectedHotspot={undefined}
       standards={mockStandards()}

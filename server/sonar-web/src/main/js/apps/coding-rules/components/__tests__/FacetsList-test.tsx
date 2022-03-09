@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -36,10 +36,10 @@ it('should correctly hide profile facets', () => {
 
 it('should correctly enable/disable the language facet', () => {
   const wrapper = shallowRender({ query: { profile: 'foo' } as Query });
-  expect(wrapper.find('Connect(LanguageFacet)').prop('disabled')).toBe(true);
+  expect(wrapper.find('withLanguagesContext(LanguageFacet)').prop('disabled')).toBe(true);
 
   wrapper.setProps({ query: {} }).update();
-  expect(wrapper.find('Connect(LanguageFacet)').prop('disabled')).toBe(false);
+  expect(wrapper.find('withLanguagesContext(LanguageFacet)').prop('disabled')).toBe(false);
 });
 
 it('should correctly enable/disable the activation severity facet', () => {

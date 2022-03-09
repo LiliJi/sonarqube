@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -38,15 +38,6 @@ export function GlobalNavBranding({ customLogoUrl, customLogoWidth }: StateProps
     <Link className="navbar-brand" to="/">
       <img alt={title} height={30} src={url} title={title} width={width} />
     </Link>
-  );
-}
-
-export function SonarCloudNavBranding() {
-  return (
-    <GlobalNavBranding
-      customLogoUrl={`${getBaseUrl()}/images/sonarcloud-logo.svg`}
-      customLogoWidth={105}
-    />
   );
 }
 

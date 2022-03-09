@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -75,6 +75,8 @@ function shallowRender(props: Partial<HotspotCategoryProps> = {}) {
       selectedHotspot={mockRawHotspot()}
       title="Class Injection"
       isLastAndIncomplete={false}
+      onLocationClick={jest.fn()}
+      onScroll={jest.fn()}
       {...props}
     />
   );

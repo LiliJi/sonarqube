@@ -1,8 +1,6 @@
-import { FlowLocation, LinearIssueLocation, SourceLine, TextRange } from '../../../types/types';
-
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +17,8 @@ import { FlowLocation, LinearIssueLocation, SourceLine, TextRange } from '../../
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+import { FlowLocation, LinearIssueLocation, SourceLine, TextRange } from '../../../types/types';
+
 export function getLinearLocations(textRange: TextRange | undefined): LinearIssueLocation[] {
   if (!textRange) {
     return [];

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import org.h2.Driver;
 import org.h2.tools.Server;
-import org.picocontainer.Startable;
+import org.sonar.api.Startable;
 import org.sonar.api.config.Configuration;
 import org.sonar.api.utils.System2;
 import org.sonar.api.utils.log.Logger;
@@ -41,6 +41,7 @@ import static org.sonar.process.ProcessProperties.Property.JDBC_USERNAME;
 import static org.sonar.process.ProcessProperties.Property.PATH_DATA;
 
 public class EmbeddedDatabase implements Startable {
+  private static final String IGNORED_KEYWORDS_OPTION = ";NON_KEYWORDS=VALUE";
   private static final Logger LOG = Loggers.get(EmbeddedDatabase.class);
 
   private final Configuration config;
@@ -108,7 +109,7 @@ public class EmbeddedDatabase implements Startable {
   }
 
   private static void createDatabase(File dbHome, String user, String password) throws SQLException {
-    String url = format("jdbc:h2:%s/sonar;USER=%s;PASSWORD=%s", dbHome.getAbsolutePath(), user, password);
+    String url = format("jdbc:h2:%s/sonar;USER=%s;PASSWORD=%s%s", dbHome.getAbsolutePath(), user, password, IGNORED_KEYWORDS_OPTION);
 
     DriverManager.registerDriver(new Driver());
     DriverManager.getConnection(url).close();

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,8 +19,17 @@
  */
 import { shallow } from 'enzyme';
 import * as React from 'react';
-import { mockStore } from '../../../helpers/testMocks';
 import { withCLanguageFeature } from '../withCLanguageFeature';
+
+jest.mock('../../../app/components/languages/LanguagesContext', () => {
+  return {
+    LanguagesContext: {
+      Consumer: ({ children }: { children: (props: {}) => React.ReactNode }) => {
+        return children({ c: { key: 'c', name: 'c' } });
+      }
+    }
+  };
+});
 
 class X extends React.Component<{ hasCLanguageFeature: boolean }> {
   render() {
@@ -31,9 +40,7 @@ class X extends React.Component<{ hasCLanguageFeature: boolean }> {
 const UnderTest = withCLanguageFeature(X);
 
 it('should pass if C Language feature is available', () => {
-  const wrapper = shallow(<UnderTest />, {
-    context: { store: mockStore({ languages: { c: {} } }) }
-  });
+  const wrapper = shallow(<UnderTest />);
   expect(wrapper.dive().type()).toBe(X);
   expect(wrapper.dive<X>().props().hasCLanguageFeature).toBe(true);
 });

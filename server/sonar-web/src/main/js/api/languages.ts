@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,7 +19,7 @@
  */
 import throwGlobalError from '../app/utils/throwGlobalError';
 import { getJSON } from '../helpers/request';
-import { Language } from '../types/types';
+import { Language } from '../types/languages';
 
 export function getLanguages(): Promise<Language[]> {
   return getJSON('/api/languages/list').then(r => r.languages, throwGlobalError);

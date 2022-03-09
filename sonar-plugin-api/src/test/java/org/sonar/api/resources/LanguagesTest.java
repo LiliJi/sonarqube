@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -29,8 +29,8 @@ public class LanguagesTest {
   @Test
   public void should_add_several_times_the_same_language() {
     Languages languages = new Languages(
-        language("fake"),
-        language("fake"));
+      language("fake"),
+      language("fake"));
 
     assertThat(languages.get("fake").getKey()).isEqualTo("fake");
   }
@@ -38,8 +38,8 @@ public class LanguagesTest {
   @Test
   public void should_get_suffixes() {
     Languages languages = new Languages(
-        language("java", "java"),
-        language("php", "php4", "php5"));
+      language("java", "java"),
+      language("php", "php4", "php5"));
 
     assertThat(languages.getSuffixes()).containsOnly("java", "php4", "php5");
     assertThat(languages.getSuffixes("java")).containsOnly("java");

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
  */
 import { shallow } from 'enzyme';
 import * as React from 'react';
+import { mockHtmlElement } from '../../../helpers/mocks/dom';
 import { getMeasures } from '../../../api/measures';
 import { getSecurityHotspotList, getSecurityHotspots } from '../../../api/security-hotspots';
 import { mockBranch, mockPullRequest } from '../../../helpers/mocks/branch-like';
@@ -27,11 +28,13 @@ import { mockRawHotspot, mockStandards } from '../../../helpers/mocks/security-h
 import { getStandards } from '../../../helpers/security-standard';
 import {
   mockCurrentUser,
+  mockEvent,
+  mockFlowLocation,
   mockLocation,
   mockLoggedInUser,
   mockRouter
 } from '../../../helpers/testMocks';
-import { waitAndUpdate } from '../../../helpers/testUtils';
+import { KEYCODE_MAP, waitAndUpdate } from '../../../helpers/testUtils';
 import { SecurityStandard } from '../../../types/security';
 import {
   HotspotResolution,
@@ -40,8 +43,30 @@ import {
 } from '../../../types/security-hotspots';
 import { SecurityHotspotsApp } from '../SecurityHotspotsApp';
 import SecurityHotspotsAppRenderer from '../SecurityHotspotsAppRenderer';
+import { scrollToElement } from '../../../helpers/scrolling';
+import { KeyboardCodes } from '../../../helpers/keycodes';
 
-beforeEach(() => jest.clearAllMocks());
+const originalAddEventListener = window.addEventListener;
+const originalRemoveEventListener = window.removeEventListener;
+
+beforeEach(() => {
+  Object.defineProperty(window, 'addEventListener', {
+    value: jest.fn()
+  });
+  Object.defineProperty(window, 'removeEventListener', {
+    value: jest.fn()
+  });
+  jest.clearAllMocks();
+});
+
+afterEach(() => {
+  Object.defineProperty(window, 'addEventListener', {
+    value: originalAddEventListener
+  });
+  Object.defineProperty(window, 'removeEventListener', {
+    value: originalRemoveEventListener
+  });
+});
 
 jest.mock('../../../api/measures', () => ({
   getMeasures: jest.fn().mockResolvedValue([])
@@ -55,6 +80,31 @@ jest.mock('../../../api/security-hotspots', () => ({
 jest.mock('../../../helpers/security-standard', () => ({
   getStandards: jest.fn().mockResolvedValue({ sonarsourceSecurity: { cat1: { title: 'cat 1' } } })
 }));
+
+jest.mock('../../../helpers/scrolling', () => ({
+  scrollToElement: jest.fn()
+}));
+
+jest.mock('keymaster', () => {
+  const key: any = (bindKey: string, _: string, callback: Function) => {
+    document.addEventListener('keydown', (event: KeyboardEvent) => {
+      const keymasterCode = event.code && KEYCODE_MAP[event.code as KeyboardCodes];
+      if (keymasterCode && bindKey.split(',').includes(keymasterCode)) {
+        return callback();
+      }
+      return true;
+    });
+  };
+  let scope = 'hotspots-list';
+
+  key.getScope = () => scope;
+  key.setScope = (newScope: string) => {
+    scope = newScope;
+  };
+  key.deleteScope = jest.fn();
+
+  return key;
+});
 
 const branch = mockBranch();
 
@@ -379,12 +429,52 @@ it('should handle leakPeriod filter change', async () => {
   expect(getSecurityHotspots).toBeCalledWith(expect.objectContaining({ sinceLeakPeriod: true }));
 });
 
+it('should handle hotspot click', () => {
+  const wrapper = shallowRender();
+  const selectedHotspot = mockRawHotspot();
+  wrapper.instance().handleHotspotClick(selectedHotspot);
+
+  expect(wrapper.instance().state.selectedHotspotLocationIndex).toBeUndefined();
+  expect(wrapper.instance().state.selectedHotspot).toEqual(selectedHotspot);
+});
+
+it('should handle secondary location click', () => {
+  const wrapper = shallowRender();
+  wrapper.instance().handleLocationClick(0);
+  expect(wrapper.instance().state.selectedHotspotLocationIndex).toEqual(0);
+
+  wrapper.instance().handleLocationClick(1);
+  expect(wrapper.instance().state.selectedHotspotLocationIndex).toEqual(1);
+
+  wrapper.instance().handleLocationClick(1);
+  expect(wrapper.instance().state.selectedHotspotLocationIndex).toBeUndefined();
+});
+
+it('should handle scroll properly', async () => {
+  const fakeElement = document.createElement('div');
+  jest.spyOn(document, 'querySelector').mockImplementationOnce(() => fakeElement);
+  const wrapper = shallowRender();
+  const element = mockHtmlElement();
+  wrapper.instance().handleScroll(element);
+  await waitAndUpdate(wrapper);
+  expect(scrollToElement).toBeCalledWith(element, {
+    bottomOffset: 100,
+    parent: fakeElement,
+    topOffset: 150
+  });
+});
+
 describe('keyboard navigation', () => {
   const hotspots = [
     mockRawHotspot({ key: 'k1' }),
     mockRawHotspot({ key: 'k2' }),
     mockRawHotspot({ key: 'k3' })
   ];
+  const flowsData = {
+    flows: [{ locations: [mockFlowLocation(), mockFlowLocation(), mockFlowLocation()] }]
+  };
+  const hotspotsForLocation = mockRawHotspot(flowsData);
+
   (getSecurityHotspots as jest.Mock).mockResolvedValueOnce({ hotspots, paging: { total: 3 } });
 
   const wrapper = shallowRender();
@@ -402,6 +492,38 @@ describe('keyboard navigation', () => {
     wrapper.instance().selectNeighboringHotspot(shift);
 
     expect(wrapper.state().selectedHotspot).toBe(hotspots[expected]);
+  });
+
+  it.each([
+    ['selecting next locations when nothing is selected', undefined, 0],
+    ['selecting next locations', 0, 1],
+    ['selecting next locations, non-existent', 2, undefined]
+  ])('should work when %s', (_, start, expected) => {
+    wrapper.setState({ selectedHotspotLocationIndex: start, selectedHotspot: hotspotsForLocation });
+    wrapper.instance().handleKeyDown(mockEvent({ altKey: true, code: KeyboardCodes.DownArrow }));
+
+    expect(wrapper.state().selectedHotspotLocationIndex).toBe(expected);
+  });
+
+  it.each([
+    ['selecting previous locations when nothing is selected', undefined, undefined],
+    ['selecting previous locations', 1, 0],
+    ['selecting previous locations, non-existent', 0, undefined]
+  ])('should work when %s', (_, start, expected) => {
+    wrapper.setState({ selectedHotspotLocationIndex: start, selectedHotspot: hotspotsForLocation });
+    wrapper.instance().handleKeyDown(mockEvent({ altKey: true, code: KeyboardCodes.UpArrow }));
+
+    expect(wrapper.state().selectedHotspotLocationIndex).toBe(expected);
+  });
+
+  it('should not change location index when locations are empty', () => {
+    wrapper.setState({ selectedHotspotLocationIndex: undefined, selectedHotspot: hotspots[0] });
+
+    wrapper.instance().handleKeyDown(mockEvent({ altKey: true, code: KeyboardCodes.UpArrow }));
+    expect(wrapper.state().selectedHotspotLocationIndex).toBeUndefined();
+
+    wrapper.instance().handleKeyDown(mockEvent({ altKey: true, code: KeyboardCodes.DownArrow }));
+    expect(wrapper.state().selectedHotspotLocationIndex).toBeUndefined();
   });
 });
 

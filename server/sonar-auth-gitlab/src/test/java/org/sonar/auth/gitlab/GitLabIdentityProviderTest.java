@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -42,7 +42,7 @@ public class GitLabIdentityProviderTest {
     assertThat(gitLabIdentityProvider.getKey()).isEqualTo("gitlab");
     assertThat(gitLabIdentityProvider.getName()).isEqualTo("GitLab");
     Display display = gitLabIdentityProvider.getDisplay();
-    assertThat(display.getIconPath()).isEqualTo("/images/gitlab-icon-rgb.svg");
+    assertThat(display.getIconPath()).isEqualTo("/images/alm/gitlab.svg");
     assertThat(display.getBackgroundColor()).isEqualTo("#6a4fbb");
     assertThat(gitLabIdentityProvider.isEnabled()).isTrue();
     assertThat(gitLabIdentityProvider.allowsUsersToSignUp()).isTrue();

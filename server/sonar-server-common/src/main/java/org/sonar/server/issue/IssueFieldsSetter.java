@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -300,18 +300,6 @@ public class IssueFieldsSetter {
     Duration currentEffort = issue.effort();
     issue.setEffort(previousEffort);
     return setEffort(issue, currentEffort, context);
-  }
-
-  public boolean setAttribute(DefaultIssue issue, String key, @Nullable String value, IssueChangeContext context) {
-    String oldValue = issue.attribute(key);
-    if (!Objects.equals(oldValue, value)) {
-      issue.setFieldChange(context, key, oldValue, value);
-      issue.setAttribute(key, value);
-      issue.setUpdateDate(context.date());
-      issue.setChanged(true);
-      return true;
-    }
-    return false;
   }
 
   public boolean setTags(DefaultIssue issue, Collection<String> tags, IssueChangeContext context) {

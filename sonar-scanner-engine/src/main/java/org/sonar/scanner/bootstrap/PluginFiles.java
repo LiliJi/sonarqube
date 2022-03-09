@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -181,7 +181,7 @@ public class PluginFiles {
     LOGGER.debug("Unpacking plugin {}", pluginKey);
     File jar = newTempFile();
     try (InputStream input = new GZIPInputStream(new BufferedInputStream(FileUtils.openInputStream(compressedFile)));
-         JarOutputStream output = new JarOutputStream(new BufferedOutputStream(FileUtils.openOutputStream(jar)))) {
+      JarOutputStream output = new JarOutputStream(new BufferedOutputStream(FileUtils.openOutputStream(jar)))) {
       Pack200.newUnpacker().unpack(input, output);
     } catch (IOException e) {
       throw new IllegalStateException(format("Fail to download plugin [%s]. Pack200 error.", pluginKey), e);

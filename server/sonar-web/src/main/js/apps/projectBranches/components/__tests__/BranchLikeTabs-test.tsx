@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -115,6 +115,18 @@ it('should NOT render renaming modal for non-main branch', () => {
     .onRename(mockPullRequest());
   expect(wrapper.state().renaming).toBeDefined();
   expect(wrapper.find(RenameBranchModal).exists()).toBe(false);
+});
+
+it('should correctly propagate an update of purge settings', () => {
+  const onBranchesChange = jest.fn();
+  const wrapper = shallowRender({ onBranchesChange });
+
+  wrapper
+    .find(BranchLikeTable)
+    .props()
+    .onUpdatePurgeSetting();
+
+  expect(onBranchesChange).toBeCalled();
 });
 
 function shallowRender(props: Partial<BranchLikeTabs['props']> = {}) {

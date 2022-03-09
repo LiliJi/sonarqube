@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@
 import { shallow } from 'enzyme';
 import * as React from 'react';
 import { Metric } from '../../../../../../../types/types';
-import BadgeParams from '../BadgeParams';
+import { BadgeParams } from '../BadgeParams';
 import { BadgeType } from '../utils';
 
 jest.mock('../../../../../../../api/web-api', () => ({

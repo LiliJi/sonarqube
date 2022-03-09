@@ -1,8 +1,6 @@
-import { Dict } from './types';
-
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +17,8 @@ import { Dict } from './types';
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+import { Dict } from './types';
+
 export const enum SettingsKey {
   DaysBeforeDeletingInactiveBranchesAndPRs = 'sonar.dbcleaner.daysBeforeDeletingInactiveBranchesAndPRs',
   DefaultProjectVisibility = 'projects.default.visibility',
@@ -26,8 +26,13 @@ export const enum SettingsKey {
   PluginRiskConsent = 'sonar.plugins.risk.consent'
 }
 
+export type SettingDefinitionAndValue = {
+  definition: ExtendedSettingDefinition;
+  settingValue?: SettingValue;
+};
+
 export type Setting = SettingValue & { definition: SettingDefinition; hasValue: boolean };
-export type SettingWithCategory = Setting & { definition: SettingCategoryDefinition };
+export type SettingWithCategory = Setting & { definition: ExtendedSettingDefinition };
 
 export enum SettingType {
   STRING = 'STRING',
@@ -56,7 +61,7 @@ export interface SettingFieldDefinition extends SettingDefinition {
   name: string;
 }
 
-export interface SettingCategoryDefinition extends SettingDefinition {
+export interface ExtendedSettingDefinition extends SettingDefinition {
   category: string;
   defaultValue?: string;
   deprecatedKey?: string;

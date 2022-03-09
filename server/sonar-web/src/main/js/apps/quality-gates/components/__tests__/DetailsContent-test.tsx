@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -39,7 +39,6 @@ it('should render correctly', () => {
 function shallowRender(props: Partial<DetailsContentProps> = {}) {
   return shallow(
     <DetailsContent
-      metrics={{}}
       onAddCondition={jest.fn()}
       onRemoveCondition={jest.fn()}
       onSaveCondition={jest.fn()}

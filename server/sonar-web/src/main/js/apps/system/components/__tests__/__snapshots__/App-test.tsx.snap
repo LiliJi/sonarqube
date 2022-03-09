@@ -10,16 +10,17 @@ exports[`should render correctly: cluster sysinfo 1`] = `
   <Helmet
     defer={false}
     encodeSpecialCharacters={true}
+    prioritizeSeoTags={false}
     title="system_info.page"
   />
   <div
     className="page-notifs"
   >
-    <Connect(withCurrentUser(Connect(withAppState(UpdateNotification))))
+    <Connect(withCurrentUser(withAppStateContext(UpdateNotification)))
       dismissable={false}
     />
   </div>
-  <Connect(PageHeader)
+  <withAppStateContext(PageHeader)
     isCluster={true}
     loading={false}
     logLevel="DEBUG"
@@ -202,12 +203,13 @@ exports[`should render correctly: loading 1`] = `
   <Helmet
     defer={false}
     encodeSpecialCharacters={true}
+    prioritizeSeoTags={false}
     title="system_info.page"
   />
   <div
     className="page-notifs"
   >
-    <Connect(withCurrentUser(Connect(withAppState(UpdateNotification))))
+    <Connect(withCurrentUser(withAppStateContext(UpdateNotification)))
       dismissable={false}
     />
   </div>
@@ -224,16 +226,17 @@ exports[`should render correctly: stand-alone sysinfo 1`] = `
   <Helmet
     defer={false}
     encodeSpecialCharacters={true}
+    prioritizeSeoTags={false}
     title="system_info.page"
   />
   <div
     className="page-notifs"
   >
-    <Connect(withCurrentUser(Connect(withAppState(UpdateNotification))))
+    <Connect(withCurrentUser(withAppStateContext(UpdateNotification)))
       dismissable={false}
     />
   </div>
-  <Connect(PageHeader)
+  <withAppStateContext(PageHeader)
     isCluster={false}
     loading={false}
     logLevel="DEBUG"

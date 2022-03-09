@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
-import org.picocontainer.Startable;
 import org.sonar.api.Plugin;
+import org.sonar.api.Startable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.core.platform.ExplodedPlugin;

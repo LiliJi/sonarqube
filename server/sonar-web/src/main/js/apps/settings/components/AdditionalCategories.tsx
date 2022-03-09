@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +19,7 @@
  */
 import * as React from 'react';
 import { translate } from '../../../helpers/l10n';
+import { ExtendedSettingDefinition } from '../../../types/settings';
 import { Component } from '../../../types/types';
 import {
   ALM_INTEGRATION,
@@ -34,6 +35,8 @@ import NewCodePeriod from './NewCodePeriod';
 import PullRequestDecorationBinding from './pullRequestDecorationBinding/PRDecorationBinding';
 
 export interface AdditionalCategoryComponentProps {
+  categories: string[];
+  definitions: ExtendedSettingDefinition[];
   component: Component | undefined;
   selectedCategory: string;
 }

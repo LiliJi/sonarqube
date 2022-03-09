@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -84,19 +84,9 @@ export const VIEWS = [
   { value: 'leak', label: 'new_code' }
 ];
 
-export const VISUALIZATIONS = [
-  'risk',
-  'reliability',
-  'security',
-  'maintainability',
-  'coverage',
-  'duplications'
-];
-
 const PAGE_SIZE = 50;
-const PAGE_SIZE_VISUALIZATIONS = 99;
 
-const METRICS = [
+export const METRICS = [
   MetricKey.alert_status,
   MetricKey.bugs,
   MetricKey.reliability_rating,
@@ -113,7 +103,7 @@ const METRICS = [
   MetricKey.projects
 ];
 
-const LEAK_METRICS = [
+export const LEAK_METRICS = [
   MetricKey.alert_status,
   MetricKey.new_bugs,
   MetricKey.new_reliability_rating,
@@ -128,37 +118,6 @@ const LEAK_METRICS = [
   MetricKey.new_lines,
   MetricKey.projects
 ];
-
-const METRICS_BY_VISUALIZATION: Dict<string[]> = {
-  risk: [
-    MetricKey.reliability_rating,
-    MetricKey.security_rating,
-    MetricKey.coverage,
-    MetricKey.ncloc,
-    MetricKey.sqale_index
-  ],
-  // x, y, size, color
-  reliability: [
-    MetricKey.ncloc,
-    MetricKey.reliability_remediation_effort,
-    MetricKey.bugs,
-    MetricKey.reliability_rating
-  ],
-  security: [
-    MetricKey.ncloc,
-    MetricKey.security_remediation_effort,
-    MetricKey.vulnerabilities,
-    MetricKey.security_rating
-  ],
-  maintainability: [
-    MetricKey.ncloc,
-    MetricKey.sqale_index,
-    MetricKey.code_smells,
-    MetricKey.sqale_rating
-  ],
-  coverage: [MetricKey.complexity, MetricKey.coverage, MetricKey.uncovered_lines],
-  duplications: [MetricKey.ncloc, MetricKey.duplicated_lines_density, MetricKey.duplicated_blocks]
-};
 
 export const FACETS = [
   'reliability_rating',
@@ -200,7 +159,7 @@ export function parseSorting(sort: string): { sortValue: string; sortDesc: boole
 }
 
 export function fetchProjects(query: Query, isFavorite: boolean, pageIndex = 1) {
-  const ps = query.view === 'visualizations' ? PAGE_SIZE_VISUALIZATIONS : PAGE_SIZE;
+  const ps = PAGE_SIZE;
   const data = convertToQueryData(query, isFavorite, {
     p: pageIndex > 1 ? pageIndex : undefined,
     ps,
@@ -231,15 +190,11 @@ export function fetchProjects(query: Query, isFavorite: boolean, pageIndex = 1) 
     });
 }
 
-function defineMetrics(query: Query): string[] {
-  switch (query.view) {
-    case 'visualizations':
-      return METRICS_BY_VISUALIZATION[query.visualization || 'risk'];
-    case 'leak':
-      return LEAK_METRICS;
-    default:
-      return METRICS;
+export function defineMetrics(query: Query): string[] {
+  if (query.view === 'leak') {
+    return LEAK_METRICS;
   }
+  return METRICS;
 }
 
 function defineFacets(query: Query): string[] {

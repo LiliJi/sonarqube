@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,7 +25,7 @@ import {
   getAlmDefinitions,
   validateAlmSettings
 } from '../../../../api/alm-settings';
-import { withAppState } from '../../../../components/hoc/withAppState';
+import withAppStateContext from '../../../../app/components/app-state/withAppStateContext';
 import { withRouter } from '../../../../components/hoc/withRouter';
 import {
   AlmBindingDefinitionBase,
@@ -34,11 +34,13 @@ import {
   AlmSettingsBindingStatus,
   AlmSettingsBindingStatusType
 } from '../../../../types/alm-settings';
+import { ExtendedSettingDefinition } from '../../../../types/settings';
 import { AppState, Dict } from '../../../../types/types';
 import AlmIntegrationRenderer from './AlmIntegrationRenderer';
 
 interface Props extends Pick<WithRouterProps, 'location' | 'router'> {
-  appState: Pick<AppState, 'branchesEnabled' | 'multipleAlmEnabled'>;
+  appState: AppState;
+  definitions: ExtendedSettingDefinition[];
 }
 
 export type AlmTabs = AlmKeys.Azure | AlmKeys.GitHub | AlmKeys.GitLab | AlmKeys.BitbucketServer;
@@ -208,7 +210,8 @@ export class AlmIntegration extends React.PureComponent<Props, State> {
 
   render() {
     const {
-      appState: { branchesEnabled, multipleAlmEnabled }
+      appState: { branchesEnabled, multipleAlmEnabled },
+      definitions: settingsDefinitions
     } = this.props;
     const {
       currentAlmTab,
@@ -237,9 +240,10 @@ export class AlmIntegration extends React.PureComponent<Props, State> {
         loadingAlmDefinitions={loadingAlmDefinitions}
         loadingProjectCount={loadingProjectCount}
         projectCount={projectCount}
+        settingsDefinitions={settingsDefinitions}
       />
     );
   }
 }
 
-export default withRouter(withAppState(AlmIntegration));
+export default withRouter(withAppStateContext(AlmIntegration));

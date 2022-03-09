@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -85,13 +85,13 @@ describe('formatDuration', () => {
 
 describe('fetchProjects', () => {
   it('correctly converts the passed arguments to the desired query format', async () => {
-    await utils.fetchProjects({ view: 'visualizations' }, true);
+    await utils.fetchProjects({}, true);
     expect(searchProjects).toBeCalledWith({
       f: 'analysisDate,leakPeriodDate',
       facets: utils.FACETS.join(),
       filter: 'isFavorite',
       p: undefined,
-      ps: 99
+      ps: 50
     });
 
     await utils.fetchProjects({ view: 'leak' }, false, 3);
@@ -119,7 +119,7 @@ describe('fetchProjects', () => {
       ],
       paging: { total: 2 }
     });
-    await utils.fetchProjects({ view: 'visualizations' }, true).then(r => {
+    await utils.fetchProjects({}, true).then(r => {
       expect(r).toEqual({
         facets: {
           new_coverage: { NO_DATA: 0 },
@@ -136,5 +136,13 @@ describe('fetchProjects', () => {
         total: 2
       });
     });
+  });
+});
+
+describe('defineMetrics', () => {
+  it('returns the correct list of metrics', () => {
+    expect(utils.defineMetrics({ view: 'leak' })).toBe(utils.LEAK_METRICS);
+    expect(utils.defineMetrics({ view: 'overall' })).toBe(utils.METRICS);
+    expect(utils.defineMetrics({})).toBe(utils.METRICS);
   });
 });

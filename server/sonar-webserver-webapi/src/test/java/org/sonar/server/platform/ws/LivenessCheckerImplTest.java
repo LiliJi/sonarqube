@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -40,7 +40,7 @@ public class LivenessCheckerImplTest {
   private final EsStatusNodeCheck esStatusNodeCheck = mock(EsStatusNodeCheck.class);
 
   LivenessCheckerImpl underTest = new LivenessCheckerImpl(dbConnectionNodeCheck, webServerStatusNodeCheck, ceStatusNodeCheck, esStatusNodeCheck);
-  LivenessCheckerImpl underTestDCE = new LivenessCheckerImpl(dbConnectionNodeCheck, webServerStatusNodeCheck, ceStatusNodeCheck);
+  LivenessCheckerImpl underTestDCE = new LivenessCheckerImpl(dbConnectionNodeCheck, webServerStatusNodeCheck, ceStatusNodeCheck, null);
 
   @Test
   public void fail_when_db_connection_check_fail() {

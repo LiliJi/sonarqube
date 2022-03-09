@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -62,6 +62,8 @@ export default function SourceViewerHeaderSlim(props: Props) {
     </>
   );
 
+  const isProjectRoot = q === ComponentQualifier.Project;
+
   return (
     <div className="source-viewer-header-slim display-flex-row display-flex-space-between">
       <div className="display-flex-center flex-1">
@@ -86,17 +88,21 @@ export default function SourceViewerHeaderSlim(props: Props) {
           </>
         )}
 
-        <div className="spacer-right">
-          <QualifierIcon qualifier={q} /> <span>{collapsedDirFromPath(path)}</span>
-          <span className="component-name-file">{fileFromPath(path)}</span>
-        </div>
+        {!isProjectRoot && (
+          <>
+            <div className="spacer-right">
+              <QualifierIcon qualifier={q} /> <span>{collapsedDirFromPath(path)}</span>
+              <span className="component-name-file">{fileFromPath(path)}</span>
+            </div>
 
-        <div className="spacer-right">
-          <ClipboardIconButton className="button-link link-no-underline" copyValue={path} />
-        </div>
+            <div className="spacer-right">
+              <ClipboardIconButton className="button-link link-no-underline" copyValue={path} />
+            </div>
+          </>
+        )}
       </div>
 
-      {measures.issues !== undefined && (
+      {!isProjectRoot && measures.issues !== undefined && (
         <div
           className={classNames('flex-0 big-spacer-left', {
             'little-spacer-right': !expandable || loading

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -22,6 +22,7 @@ package org.sonar.server.platform.db.migration;
 import org.sonar.core.platform.Module;
 import org.sonar.server.platform.db.migration.history.MigrationHistoryImpl;
 import org.sonar.server.platform.db.migration.history.MigrationHistoryMeddler;
+import org.sonar.server.platform.db.migration.history.MigrationHistoryTableImpl;
 import org.sonar.server.platform.db.migration.sql.DbPrimaryKeyConstraintFinder;
 import org.sonar.server.platform.db.migration.sql.DropPrimaryKeySqlGenerator;
 import org.sonar.server.platform.db.migration.step.MigrationStepRegistryImpl;
@@ -31,17 +32,20 @@ import org.sonar.server.platform.db.migration.version.v90.DbVersion90;
 import org.sonar.server.platform.db.migration.version.v91.DbVersion91;
 import org.sonar.server.platform.db.migration.version.v92.DbVersion92;
 import org.sonar.server.platform.db.migration.version.v93.DbVersion93;
+import org.sonar.server.platform.db.migration.version.v94.DbVersion94;
 
 public class MigrationConfigurationModule extends Module {
   @Override
   protected void configureModule() {
     add(
+      MigrationHistoryTableImpl.class,
       // DbVersion implementations
       DbVersion00.class,
       DbVersion90.class,
       DbVersion91.class,
       DbVersion92.class,
       DbVersion93.class,
+      DbVersion94.class,
 
       // migration steps
       MigrationStepRegistryImpl.class,

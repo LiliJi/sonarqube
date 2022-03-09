@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@ public class CreateInitialSchemaTest {
   @Rule
   public final CoreDbTester dbTester = CoreDbTester.createForSchema(CreateInitialSchemaTest.class, "empty.sql");
 
-  private CreateInitialSchema underTest = new CreateInitialSchema(dbTester.database());
+  private final CreateInitialSchema underTest = new CreateInitialSchema(dbTester.database());
 
   @Test
   public void creates_tables_on_empty_db() throws Exception {
@@ -46,9 +46,13 @@ public class CreateInitialSchemaTest {
       ResultSet rs = connection.getMetaData().getTables(null, null, null, new String[] {"TABLE"})) {
 
       while (rs.next()) {
-        tables.add(rs.getString("TABLE_NAME").toLowerCase(Locale.ENGLISH));
+        String schema = rs.getString("TABLE_SCHEM");
+        if (!"INFORMATION_SCHEMA".equalsIgnoreCase(schema)) {
+          tables.add(rs.getString("TABLE_NAME").toLowerCase(Locale.ENGLISH));
+        }
       }
     }
+
     assertThat(tables).containsOnly(
       "active_rules",
       "active_rule_parameters",

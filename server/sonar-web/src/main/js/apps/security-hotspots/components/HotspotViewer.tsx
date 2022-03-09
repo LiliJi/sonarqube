@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,24 +20,23 @@
 import * as React from 'react';
 import { getSecurityHotspotDetails } from '../../../api/security-hotspots';
 import { scrollToElement } from '../../../helpers/scrolling';
-import { BranchLike } from '../../../types/branch-like';
 import {
   Hotspot,
   HotspotStatusFilter,
   HotspotStatusOption
 } from '../../../types/security-hotspots';
-import { Component, StandardSecurityCategories } from '../../../types/types';
+import { Component } from '../../../types/types';
 import { getStatusFilterFromStatusOption } from '../utils';
 import HotspotViewerRenderer from './HotspotViewerRenderer';
 
 interface Props {
-  branchLike?: BranchLike;
   component: Component;
   hotspotKey: string;
   hotspotsReviewedMeasure?: string;
   onSwitchStatusFilter: (option: HotspotStatusFilter) => void;
   onUpdateHotspot: (hotspotKey: string) => Promise<void>;
-  securityCategories: StandardSecurityCategories;
+  onLocationClick: (index: number) => void;
+  selectedHotspotLocation?: number;
 }
 
 interface State {
@@ -119,12 +118,11 @@ export default class HotspotViewer extends React.PureComponent<Props, State> {
   };
 
   render() {
-    const { branchLike, component, hotspotsReviewedMeasure, securityCategories } = this.props;
+    const { component, hotspotsReviewedMeasure, selectedHotspotLocation } = this.props;
     const { hotspot, lastStatusChangedTo, loading, showStatusUpdateSuccessModal } = this.state;
 
     return (
       <HotspotViewerRenderer
-        branchLike={branchLike}
         component={component}
         commentTextRef={this.commentTextRef}
         hotspot={hotspot}
@@ -135,8 +133,9 @@ export default class HotspotViewer extends React.PureComponent<Props, State> {
         onSwitchFilterToStatusOfUpdatedHotspot={this.handleSwitchFilterToStatusOfUpdatedHotspot}
         onShowCommentForm={this.handleScrollToCommentForm}
         onUpdateHotspot={this.handleHotspotUpdate}
+        onLocationClick={this.props.onLocationClick}
         showStatusUpdateSuccessModal={showStatusUpdateSuccessModal}
-        securityCategories={securityCategories}
+        selectedHotspotLocation={selectedHotspotLocation}
       />
     );
   }

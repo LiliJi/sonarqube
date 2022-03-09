@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -32,6 +32,9 @@ import org.sonar.db.DbSession;
 import org.sonar.db.qualityprofile.QProfileDto;
 import org.sonar.db.rule.RuleDefinitionDto;
 import org.sonar.server.exceptions.BadRequestException;
+import org.sonar.server.pushapi.qualityprofile.QualityProfileChangeEventService;
+import org.sonar.server.qualityprofile.builtin.RuleActivationContext;
+import org.sonar.server.qualityprofile.builtin.RuleActivator;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 import org.sonar.server.rule.index.RuleIndex;
 import org.sonar.server.rule.index.RuleQuery;
@@ -44,12 +47,15 @@ public class QProfileRulesImpl implements QProfileRules {
   private final RuleActivator ruleActivator;
   private final RuleIndex ruleIndex;
   private final ActiveRuleIndexer activeRuleIndexer;
+  private final QualityProfileChangeEventService qualityProfileChangeEventService;
 
-  public QProfileRulesImpl(DbClient db, RuleActivator ruleActivator, RuleIndex ruleIndex, ActiveRuleIndexer activeRuleIndexer) {
+  public QProfileRulesImpl(DbClient db, RuleActivator ruleActivator, RuleIndex ruleIndex, ActiveRuleIndexer activeRuleIndexer,
+    QualityProfileChangeEventService qualityProfileChangeEventService) {
     this.db = db;
     this.ruleActivator = ruleActivator;
     this.ruleIndex = ruleIndex;
     this.activeRuleIndexer = activeRuleIndexer;
+    this.qualityProfileChangeEventService = qualityProfileChangeEventService;
   }
 
   @Override
@@ -63,6 +69,7 @@ public class QProfileRulesImpl implements QProfileRules {
     for (RuleActivation activation : activations) {
       changes.addAll(ruleActivator.activate(dbSession, activation, context));
     }
+    qualityProfileChangeEventService.distributeRuleChangeEvent(List.of(profile), changes, profile.getLanguage());
     activeRuleIndexer.commitAndIndex(dbSession, changes);
     return changes;
   }
@@ -70,10 +77,12 @@ public class QProfileRulesImpl implements QProfileRules {
   @Override
   public BulkChangeResult bulkActivateAndCommit(DbSession dbSession, QProfileDto profile, RuleQuery ruleQuery, @Nullable String severity) {
     verifyNotBuiltIn(profile);
-    return doBulk(dbSession, profile, ruleQuery, (context, ruleDefinition) -> {
+    BulkChangeResult bulkChangeResult = doBulk(dbSession, profile, ruleQuery, (context, ruleDefinition) -> {
       RuleActivation activation = RuleActivation.create(ruleDefinition.getUuid(), severity, null);
       return ruleActivator.activate(dbSession, activation, context);
     });
+    qualityProfileChangeEventService.distributeRuleChangeEvent(List.of(profile), bulkChangeResult.getChanges(), profile.getLanguage());
+    return bulkChangeResult;
   }
 
   @Override
@@ -85,6 +94,9 @@ public class QProfileRulesImpl implements QProfileRules {
     for (String ruleUuid : ruleUuids) {
       changes.addAll(ruleActivator.deactivate(dbSession, context, ruleUuid, false));
     }
+
+    qualityProfileChangeEventService.distributeRuleChangeEvent(List.of(profile), changes, profile.getLanguage());
+
     activeRuleIndexer.commitAndIndex(dbSession, changes);
     return changes;
   }
@@ -92,7 +104,12 @@ public class QProfileRulesImpl implements QProfileRules {
   @Override
   public BulkChangeResult bulkDeactivateAndCommit(DbSession dbSession, QProfileDto profile, RuleQuery ruleQuery) {
     verifyNotBuiltIn(profile);
-    return doBulk(dbSession, profile, ruleQuery, (context, ruleDefinition) -> ruleActivator.deactivate(dbSession, context, ruleDefinition.getUuid(), false));
+    BulkChangeResult bulkChangeResult = doBulk(dbSession, profile, ruleQuery, (context, ruleDefinition) ->
+      ruleActivator.deactivate(dbSession, context, ruleDefinition.getUuid(), false));
+
+    qualityProfileChangeEventService.distributeRuleChangeEvent(List.of(profile), bulkChangeResult.getChanges(), profile.getLanguage());
+
+    return bulkChangeResult;
   }
 
   @Override

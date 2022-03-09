@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,10 +19,10 @@
  */
 import * as React from 'react';
 import SelectLegacy from '../../../../components/controls/SelectLegacy';
-import { SettingCategoryDefinition } from '../../../../types/settings';
+import { ExtendedSettingDefinition } from '../../../../types/settings';
 import { DefaultSpecializedInputProps } from '../../utils';
 
-type Props = DefaultSpecializedInputProps & Pick<SettingCategoryDefinition, 'options'>;
+type Props = DefaultSpecializedInputProps & Pick<ExtendedSettingDefinition, 'options'>;
 
 export default class InputForSingleSelectList extends React.PureComponent<Props> {
   handleInputChange = ({ value }: { value: string }) => {

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -20,7 +20,14 @@
 import getStore from '../getStore';
 import throwGlobalError from '../throwGlobalError';
 
-jest.useFakeTimers();
+beforeAll(() => {
+  jest.useFakeTimers();
+});
+
+afterAll(() => {
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
+});
 
 it('should put the error message in the store', async () => {
   const response = new Response();

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -50,7 +50,6 @@ export interface PRDecorationBindingRendererProps {
   onSubmit: () => void;
   updating: boolean;
   successfullyUpdated: boolean;
-  monorepoEnabled: boolean;
   onCheckConfiguration: () => void;
   checkingConfiguration: boolean;
   configurationErrors?: ProjectAlmBindingConfigurationErrors;
@@ -78,7 +77,6 @@ export default function PRDecorationBindingRenderer(props: PRDecorationBindingRe
     loading,
     updating,
     successfullyUpdated,
-    monorepoEnabled,
     checkingConfiguration,
     configurationErrors,
     isSysAdmin
@@ -169,7 +167,6 @@ export default function PRDecorationBindingRenderer(props: PRDecorationBindingRe
             instances={instances}
             formData={formData}
             onFieldChange={props.onFieldChange}
-            monorepoEnabled={monorepoEnabled}
           />
         )}
 

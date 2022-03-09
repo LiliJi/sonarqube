@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -25,7 +25,6 @@ import { getBranches, getPullRequests } from '../../api/branches';
 import { getAnalysisStatus, getTasksForComponent } from '../../api/ce';
 import { getComponentData } from '../../api/components';
 import { getComponentNavigation } from '../../api/nav';
-import { withAppState } from '../../components/hoc/withAppState';
 import { Location, Router, withRouter } from '../../components/hoc/withRouter';
 import {
   getBranchLikeQuery,
@@ -35,7 +34,7 @@ import {
 } from '../../helpers/branch-like';
 import { HttpStatus } from '../../helpers/request';
 import { getPortfolioUrl } from '../../helpers/urls';
-import { registerBranchStatus, requireAuthorization } from '../../store/rootActions';
+import { registerBranchStatus } from '../../store/rootActions';
 import {
   ProjectAlmBindingConfigurationErrors,
   ProjectAlmBindingResponse
@@ -44,17 +43,18 @@ import { BranchLike } from '../../types/branch-like';
 import { ComponentQualifier, isPortfolioLike } from '../../types/component';
 import { Task, TaskStatuses, TaskTypes, TaskWarning } from '../../types/tasks';
 import { AppState, Component, Status } from '../../types/types';
+import handleRequiredAuthorization from '../utils/handleRequiredAuthorization';
+import withAppStateContext from './app-state/withAppStateContext';
 import ComponentContainerNotFound from './ComponentContainerNotFound';
 import { ComponentContext } from './ComponentContext';
 import PageUnavailableDueToIndexation from './indexation/PageUnavailableDueToIndexation';
 import ComponentNav from './nav/component/ComponentNav';
 
 interface Props {
-  appState: Pick<AppState, 'branchesEnabled'>;
+  appState: AppState;
   children: React.ReactElement;
   location: Pick<Location, 'query' | 'pathname'>;
   registerBranchStatus: (branchLike: BranchLike, component: string, status: Status) => void;
-  requireAuthorization: (router: Pick<Router, 'replace'>) => void;
   router: Pick<Router, 'replace'>;
 }
 
@@ -111,8 +111,8 @@ export class ComponentContainer extends React.PureComponent<Props, State> {
       componentWithQualifier = this.addQualifier({ ...nav, ...component });
     } catch (e) {
       if (this.mounted) {
-        if (e && e.status === HttpStatus.Forbidden) {
-          this.props.requireAuthorization(this.props.router);
+        if (e && e instanceof Response && e.status === HttpStatus.Forbidden) {
+          handleRequiredAuthorization();
         } else {
           this.setState({ component: undefined, loading: false });
         }
@@ -417,7 +417,8 @@ export class ComponentContainer extends React.PureComponent<Props, State> {
       isPending,
       projectBinding,
       projectBindingErrors,
-      tasksInProgress
+      tasksInProgress,
+      warnings
     } = this.state;
     const isInProgress = tasksInProgress && tasksInProgress.length > 0;
 
@@ -439,7 +440,7 @@ export class ComponentContainer extends React.PureComponent<Props, State> {
               onWarningDismiss={this.handleWarningDismiss}
               projectBinding={projectBinding}
               projectBindingErrors={projectBindingErrors}
-              warnings={this.state.warnings}
+              warnings={warnings}
             />
           )}
         {loading ? (
@@ -465,6 +466,8 @@ export class ComponentContainer extends React.PureComponent<Props, State> {
   }
 }
 
-const mapDispatchToProps = { registerBranchStatus, requireAuthorization };
+const mapDispatchToProps = { registerBranchStatus };
 
-export default withAppState(withRouter(connect(null, mapDispatchToProps)(ComponentContainer)));
+export default withRouter(
+  connect(null, mapDispatchToProps)(withAppStateContext(ComponentContainer))
+);

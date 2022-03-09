@@ -6,14 +6,6 @@ exports[`renderBulkButton should be null when the user is not logged in 1`] = `<
 
 exports[`renderBulkButton should show bulk change button when user has edit rights on specific quality profile 1`] = `
 <BulkChange
-  languages={
-    Object {
-      "js": Object {
-        "key": "js",
-        "name": "JavaScript",
-      },
-    }
-  }
   query={
     Object {
       "activation": undefined,
@@ -78,14 +70,6 @@ exports[`renderBulkButton should show bulk change button when user has edit righ
 
 exports[`renderBulkButton should show bulk change button when user has global admin rights on quality profiles 1`] = `
 <BulkChange
-  languages={
-    Object {
-      "js": Object {
-        "key": "js",
-        "name": "JavaScript",
-      },
-    }
-  }
   query={
     Object {
       "activation": undefined,
@@ -200,6 +184,7 @@ exports[`should render correctly: loaded 1`] = `
   <Helmet
     defer={false}
     encodeSpecialCharacters={true}
+    prioritizeSeoTags={false}
     title="coding_rules.page"
   >
     <meta
@@ -235,14 +220,6 @@ exports[`should render correctly: loaded 1`] = `
               className="display-flex-space-between"
             >
               <BulkChange
-                languages={
-                  Object {
-                    "js": Object {
-                      "key": "js",
-                      "name": "JavaScript",
-                    },
-                  }
-                }
                 query={
                   Object {
                     "activation": undefined,
@@ -364,6 +341,7 @@ exports[`should render correctly: loading 1`] = `
   <Helmet
     defer={false}
     encodeSpecialCharacters={true}
+    prioritizeSeoTags={false}
     title="coding_rules.page"
   >
     <meta
@@ -501,6 +479,7 @@ exports[`should render correctly: open rule 1`] = `
   <Helmet
     defer={false}
     encodeSpecialCharacters={true}
+    prioritizeSeoTags={false}
     title="coding_rules.page"
   >
     <meta
@@ -589,6 +568,7 @@ exports[`should render correctly: using permalink 1`] = `
   <Helmet
     defer={false}
     encodeSpecialCharacters={true}
+    prioritizeSeoTags={false}
     title="coding_rules.page"
   >
     <meta

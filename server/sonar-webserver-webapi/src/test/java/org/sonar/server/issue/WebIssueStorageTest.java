@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -106,7 +106,6 @@ public class WebIssueStorageTest {
       .setResolution("OPEN")
       .setStatus("OPEN")
       .setSeverity("BLOCKER")
-      .setAttribute("foo", "bar")
       .addComment(comment)
       .setCreationDate(date)
       .setUpdateDate(date)
@@ -151,7 +150,6 @@ public class WebIssueStorageTest {
       .setResolution("OPEN")
       .setStatus("OPEN")
       .setSeverity("BLOCKER")
-      .setAttribute("foo", "bar")
       .setCreationDate(date)
       .setUpdateDate(date)
       .setCloseDate(date);
@@ -179,7 +177,6 @@ public class WebIssueStorageTest {
       .setResolution("FIXED")
       .setStatus("RESOLVED")
       .setSeverity("MAJOR")
-      .setAttribute("fox", "bax")
       .setCreationDate(DateUtils.addDays(date, 1))
       .setUpdateDate(DateUtils.addDays(date, 1))
       .setCloseDate(DateUtils.addDays(date, 1))
@@ -198,8 +195,7 @@ public class WebIssueStorageTest {
       .containsEntry("CHECKSUM", updated.checksum())
       .containsEntry("COMPONENT_UUID", issue.componentUuid())
       .containsEntry("EFFORT", updated.effortInMinutes())
-      .containsEntry("ISSUE_ATTRIBUTES", "fox=bax")
-      .containsEntry("ISSUE_TYPE", 3)
+      .containsEntry("ISSUE_TYPE", 3L)
       .containsEntry("KEE", issue.key())
       .containsEntry("LINE", (long) updated.line())
       .containsEntry("PROJECT_UUID", updated.projectUuid())

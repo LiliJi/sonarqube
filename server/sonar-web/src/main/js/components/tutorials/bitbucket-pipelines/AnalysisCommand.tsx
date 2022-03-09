@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,8 +19,8 @@
  */
 import { Dictionary } from 'lodash';
 import * as React from 'react';
+import withAppStateContext from '../../../app/components/app-state/withAppStateContext';
 import { AppState, Component } from '../../../types/types';
-import { withAppState } from '../../hoc/withAppState';
 import { CompilationInfo } from '../components/CompilationInfo';
 import CreateYmlFile from '../components/CreateYmlFile';
 import { BuildTools } from '../types';
@@ -67,4 +67,4 @@ export function AnalysisCommand(props: AnalysisCommandProps) {
   );
 }
 
-export default withAppState(AnalysisCommand);
+export default withAppStateContext(AnalysisCommand);

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -46,6 +46,7 @@ import org.sonar.db.rule.RuleParamDto;
 import org.sonar.db.user.GroupDto;
 import org.sonar.db.user.UserDto;
 import org.sonar.server.exceptions.BadRequestException;
+import org.sonar.server.qualityprofile.builtin.QProfileName;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 
 import static java.util.Arrays.asList;

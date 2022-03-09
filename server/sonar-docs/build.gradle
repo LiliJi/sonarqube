@@ -100,22 +100,6 @@ task "yarn_validate-ci"(type: Exec) {
   commandLine osAdaptiveCommand(['npm', 'run', 'validate-ci'])
 }
 
-// Check for known vulnerabilities
-task dependency_audit(type: Exec) {
-  inputs.file('package.json')
-  outputs.cacheIf { false }
-  ignoreExitValue = true
-
-  commandLine osAdaptiveCommand(['npm', 'run', 'audit-ci'])
-}
-
-task dependencyCheckAggregate_prerequisites(type: Exec) {
-  // the OWASP tool does not support yarn and its yarn.lock files, so node modules
-  // should be explicitly installed (yarn install) before running the audit
-  // See https://github.com/jeremylong/DependencyCheck/issues/2393
-  commandLine osAdaptiveCommand(['yarn', 'install', '--immutable'])
-}
-
 task zip(type: Zip) {
   def archiveDir = "$version"
   duplicatesStrategy DuplicatesStrategy.EXCLUDE

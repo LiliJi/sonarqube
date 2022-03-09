@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -64,6 +64,8 @@ function shallowRender(props: Partial<HotspotSimpleListProps> = {}) {
       loadingMore={false}
       onHotspotClick={jest.fn()}
       onLoadMore={jest.fn()}
+      onLocationClick={jest.fn()}
+      onScroll={jest.fn()}
       selectedHotspot={hotspots[0]}
       standards={{
         cwe: { 327: { title: 'Use of a Broken or Risky Cryptographic Algorithm' } },

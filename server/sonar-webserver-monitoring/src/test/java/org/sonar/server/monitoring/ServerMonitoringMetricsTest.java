@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -117,6 +117,16 @@ public class ServerMonitoringMetricsTest {
 
     assertThat(CollectorRegistry.defaultRegistry.getSampleValue("sonarqube_web_uptime_minutes"))
       .isEqualTo(10);
+  }
+
+  @Test
+  public void setters_setNumberOfConnectedSonarLintClients() {
+    ServerMonitoringMetrics metrics = new ServerMonitoringMetrics();
+
+    metrics.setNumberOfConnectedSonarLintClients(5);
+
+    assertThat(CollectorRegistry.defaultRegistry.getSampleValue("sonarqube_number_of_connected_sonarlint_clients"))
+      .isEqualTo(5);
   }
 
   @Test

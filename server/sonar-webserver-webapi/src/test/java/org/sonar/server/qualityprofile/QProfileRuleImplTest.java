@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -43,6 +43,8 @@ import org.sonar.db.rule.RuleParamDto;
 import org.sonar.server.es.EsTester;
 import org.sonar.server.es.SearchOptions;
 import org.sonar.server.exceptions.BadRequestException;
+import org.sonar.server.pushapi.qualityprofile.QualityProfileChangeEventService;
+import org.sonar.server.qualityprofile.builtin.RuleActivator;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 import org.sonar.server.rule.index.RuleIndex;
 import org.sonar.server.rule.index.RuleIndexer;
@@ -61,6 +63,11 @@ import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.sonar.api.rule.Severity.BLOCKER;
 import static org.sonar.api.rule.Severity.CRITICAL;
 import static org.sonar.api.rule.Severity.MAJOR;
@@ -81,9 +88,10 @@ public class QProfileRuleImplTest {
   private ActiveRuleIndexer activeRuleIndexer = new ActiveRuleIndexer(db.getDbClient(), es.client());
   private RuleIndexer ruleIndexer = new RuleIndexer(es.client(), db.getDbClient());
   private TypeValidations typeValidations = new TypeValidations(asList(new StringTypeValidation(), new IntegerTypeValidation()));
+  private QualityProfileChangeEventService qualityProfileChangeEventService = mock(QualityProfileChangeEventService.class);
 
   private RuleActivator ruleActivator = new RuleActivator(system2, db.getDbClient(), typeValidations, userSession);
-  private QProfileRules underTest = new QProfileRulesImpl(db.getDbClient(), ruleActivator, ruleIndex, activeRuleIndexer);
+  private QProfileRules underTest = new QProfileRulesImpl(db.getDbClient(), ruleActivator, ruleIndex, activeRuleIndexer, qualityProfileChangeEventService);
 
   @Test
   public void system_activates_rule_without_parameters() {
@@ -94,6 +102,7 @@ public class QProfileRuleImplTest {
 
     assertThatRuleIsActivated(profile, rule, changes, BLOCKER, null, emptyMap());
     assertThatProfileIsUpdatedBySystem(profile);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), any(), eq(profile.getLanguage()));
   }
 
   @Test
@@ -106,6 +115,7 @@ public class QProfileRuleImplTest {
 
     assertThatRuleIsActivated(profile, rule, changes, BLOCKER, null, emptyMap());
     assertThatProfileIsUpdatedByUser(profile);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), any(), eq(profile.getLanguage()));
   }
 
   @Test
@@ -119,6 +129,7 @@ public class QProfileRuleImplTest {
 
     assertThatRuleIsActivated(profile, rule, changes, rule.getSeverityString(), null, of("min", "10"));
     assertThatProfileIsUpdatedBySystem(profile);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), any(), eq(profile.getLanguage()));
   }
 
   @Test
@@ -132,6 +143,7 @@ public class QProfileRuleImplTest {
 
     assertThatRuleIsActivated(profile, rule, changes, rule.getSeverityString(), null, of("min", "15"));
     assertThatProfileIsUpdatedBySystem(profile);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), any(), eq(profile.getLanguage()));
   }
 
   @Test
@@ -144,6 +156,7 @@ public class QProfileRuleImplTest {
 
     assertThatRuleIsActivated(profile, rule, changes, rule.getSeverityString(), null, emptyMap());
     assertThatProfileIsUpdatedBySystem(profile);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), any(), eq(profile.getLanguage()));
   }
 
   /**
@@ -160,6 +173,7 @@ public class QProfileRuleImplTest {
 
     assertThatRuleIsActivated(profile, rule, changes, rule.getSeverityString(), null, of("min", "10"));
     assertThatProfileIsUpdatedBySystem(profile);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), any(), eq(profile.getLanguage()));
   }
 
   /**
@@ -179,6 +193,7 @@ public class QProfileRuleImplTest {
     assertThatRuleIsActivated(profile, rule, changes, rule.getSeverityString(), null,
       of(paramWithoutDefault.getName(), "-10", paramWithDefault.getName(), paramWithDefault.getDefaultValue()));
     assertThatProfileIsUpdatedBySystem(profile);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), any(), eq(profile.getLanguage()));
   }
 
   @Test
@@ -192,6 +207,7 @@ public class QProfileRuleImplTest {
 
     assertThatRuleIsActivated(profile, rule, changes, rule.getSeverityString(), null, of(param.getName(), param.getDefaultValue()));
     assertThatProfileIsUpdatedBySystem(profile);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), any(), eq(profile.getLanguage()));
   }
 
   @Test
@@ -202,14 +218,16 @@ public class QProfileRuleImplTest {
 
     // initial activation
     RuleActivation activation = RuleActivation.create(rule.getUuid(), MAJOR, null);
-    activate(profile, activation);
+    List<ActiveRuleChange> changes = activate(profile, activation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
 
     // update
     RuleActivation updateActivation = RuleActivation.create(rule.getUuid(), CRITICAL, of(param.getName(), "20"));
-    List<ActiveRuleChange> changes = activate(profile, updateActivation);
+    changes = activate(profile, updateActivation);
 
     assertThatRuleIsUpdated(profile, rule, CRITICAL, null, of(param.getName(), "20"));
     assertThatProfileIsUpdatedBySystem(profile);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
   }
 
   @Test
@@ -221,14 +239,16 @@ public class QProfileRuleImplTest {
 
     // initial activation -> param "max" has a default value
     RuleActivation activation = RuleActivation.create(rule.getUuid());
-    activate(profile, activation);
+    List<ActiveRuleChange> changes = activate(profile, activation);
 
     // update param "min", which has no default value
     RuleActivation updateActivation = RuleActivation.create(rule.getUuid(), MAJOR, of(paramWithoutDefault.getName(), "3"));
-    List<ActiveRuleChange> changes = activate(profile, updateActivation);
+    changes = activate(profile, updateActivation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
 
     assertThatRuleIsUpdated(profile, rule, MAJOR, null, of(paramWithDefault.getName(), "10", paramWithoutDefault.getName(), "3"));
     assertThatProfileIsUpdatedBySystem(profile);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
   }
 
   @Test
@@ -239,14 +259,16 @@ public class QProfileRuleImplTest {
 
     // initial activation -> param "max" has a default value
     RuleActivation activation = RuleActivation.create(rule.getUuid(), null, of(paramWithDefault.getName(), "20"));
-    activate(profile, activation);
+    List<ActiveRuleChange> changes = activate(profile, activation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
 
     // reset to default_value
     RuleActivation updateActivation = RuleActivation.create(rule.getUuid(), null, of(paramWithDefault.getName(), ""));
-    List<ActiveRuleChange> changes = activate(profile, updateActivation);
+    changes = activate(profile, updateActivation);
 
     assertThatRuleIsUpdated(profile, rule, rule.getSeverityString(), null, of(paramWithDefault.getName(), "10"));
     assertThat(changes).hasSize(1);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
   }
 
   @Test
@@ -258,14 +280,16 @@ public class QProfileRuleImplTest {
 
     // initial activation -> param "max" has a default value
     RuleActivation activation = RuleActivation.create(rule.getUuid(), null, of(paramWithoutDefault.getName(), "20"));
-    activate(profile, activation);
+    List<ActiveRuleChange> changes = activate(profile, activation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
 
     // remove parameter
     RuleActivation updateActivation = RuleActivation.create(rule.getUuid(), null, of(paramWithoutDefault.getName(), ""));
-    List<ActiveRuleChange> changes = activate(profile, updateActivation);
+    changes = activate(profile, updateActivation);
 
     assertThatRuleIsUpdated(profile, rule, rule.getSeverityString(), null, of(paramWithDefault.getName(), paramWithDefault.getDefaultValue()));
     assertThat(changes).hasSize(1);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
   }
 
   @Test
@@ -279,6 +303,7 @@ public class QProfileRuleImplTest {
     List<ActiveRuleChange> changes = activate(profile, activation);
     db.getDbClient().activeRuleDao().deleteParametersByRuleProfileUuids(db.getSession(), asList(profile.getRulesProfileUuid()));
     assertThatRuleIsActivated(profile, rule, changes, rule.getSeverityString(), null, emptyMap());
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
 
     // contrary to activerule, the param is supposed to be inserted but not updated
     RuleActivation updateActivation = RuleActivation.create(rule.getUuid(), null, of(param.getName(), ""));
@@ -286,6 +311,7 @@ public class QProfileRuleImplTest {
 
     assertThatRuleIsUpdated(profile, rule, rule.getSeverityString(), null, of(param.getName(), param.getDefaultValue()));
     assertThat(changes).hasSize(1);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
   }
 
   @Test
@@ -295,13 +321,15 @@ public class QProfileRuleImplTest {
 
     // initial activation
     RuleActivation activation = RuleActivation.create(rule.getUuid());
-    activate(profile, activation);
+    List<ActiveRuleChange> changes = activate(profile, activation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
 
     // update with exactly the same severity and params
     activation = RuleActivation.create(rule.getUuid());
-    List<ActiveRuleChange> changes = activate(profile, activation);
+    changes = activate(profile, activation);
 
     assertThat(changes).isEmpty();
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
   }
 
   @Test
@@ -312,13 +340,16 @@ public class QProfileRuleImplTest {
 
     // initial activation -> param "max" has a default value
     RuleActivation activation = RuleActivation.create(rule.getUuid(), BLOCKER, of(param.getName(), "20"));
-    activate(profile, activation);
+    List<ActiveRuleChange> changes = activate(profile, activation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
+
 
     // update without any severity or params => keep
     RuleActivation update = RuleActivation.create(rule.getUuid());
-    List<ActiveRuleChange> changes = activate(profile, update);
+    changes = activate(profile, update);
 
     assertThat(changes).isEmpty();
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
   }
 
   @Test
@@ -328,6 +359,7 @@ public class QProfileRuleImplTest {
     RuleActivation activation = RuleActivation.create(rule.getUuid());
 
     expectFailure("java rule " + rule.getKey() + " cannot be activated on js profile " + profile.getKee(), () -> activate(profile, activation));
+    verifyNoInteractions(qualityProfileChangeEventService);
   }
 
   @Test
@@ -337,6 +369,7 @@ public class QProfileRuleImplTest {
     RuleActivation activation = RuleActivation.create(rule.getUuid());
 
     expectFailure("Rule was removed: " + rule.getKey(), () -> activate(profile, activation));
+    verifyNoInteractions(qualityProfileChangeEventService);
   }
 
   @Test
@@ -346,6 +379,7 @@ public class QProfileRuleImplTest {
     RuleActivation activation = RuleActivation.create(rule.getUuid());
 
     expectFailure("Rule template can't be activated on a Quality profile: " + rule.getKey(), () -> activate(profile, activation));
+    verifyNoInteractions(qualityProfileChangeEventService);
   }
 
   @Test
@@ -356,6 +390,7 @@ public class QProfileRuleImplTest {
 
     RuleActivation activation = RuleActivation.create(rule.getUuid(), null, of(param.getName(), "foo"));
     expectFailure("Value 'foo' must be an integer.", () -> activate(profile, activation));
+    verifyNoInteractions(qualityProfileChangeEventService);
   }
 
   @Test
@@ -368,13 +403,15 @@ public class QProfileRuleImplTest {
 
     // initial activation
     RuleActivation activation = RuleActivation.create(customRule.getUuid(), MAJOR, emptyMap());
-    activate(profile, activation);
+    List<ActiveRuleChange> changes = activate(profile, activation);
     assertThatRuleIsActivated(profile, customRule, null, MAJOR, null, of("format", "txt"));
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
 
     // update -> parameter is not changed
     RuleActivation updateActivation = RuleActivation.create(customRule.getUuid(), BLOCKER, of("format", "xml"));
-    activate(profile, updateActivation);
+    changes = activate(profile, updateActivation);
     assertThatRuleIsActivated(profile, customRule, null, BLOCKER, null, of("format", "txt"));
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
   }
 
   @Test
@@ -383,13 +420,15 @@ public class QProfileRuleImplTest {
     RuleDefinitionDto rule = createRule();
     QProfileDto profile = createProfile(rule);
     RuleActivation activation = RuleActivation.create(rule.getUuid());
-    activate(profile, activation);
+    List<ActiveRuleChange> changes = activate(profile, activation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
 
-    List<ActiveRuleChange> changes = deactivate(profile, rule);
+    changes = deactivate(profile, rule);
     verifyNoActiveRules();
     assertThatProfileIsUpdatedByUser(profile);
     assertThat(changes).hasSize(1);
     assertThat(changes.get(0).getType()).isEqualTo(ActiveRuleChange.Type.DEACTIVATED);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
   }
 
   @Test
@@ -397,12 +436,14 @@ public class QProfileRuleImplTest {
     RuleDefinitionDto rule = createRule();
     QProfileDto profile = createProfile(rule);
     RuleActivation activation = RuleActivation.create(rule.getUuid());
-    activate(profile, activation);
+    List<ActiveRuleChange> changes = activate(profile, activation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
 
-    List<ActiveRuleChange> changes = deactivate(profile, rule);
+    changes = deactivate(profile, rule);
     verifyNoActiveRules();
     assertThatProfileIsUpdatedBySystem(profile);
     assertThatChangeIsDeactivation(changes, rule);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
   }
 
   private void assertThatChangeIsDeactivation(List<ActiveRuleChange> changes, RuleDefinitionDto rule) {
@@ -420,6 +461,7 @@ public class QProfileRuleImplTest {
     List<ActiveRuleChange> changes = deactivate(profile, rule);
     verifyNoActiveRules();
     assertThat(changes).isEmpty();
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), any(), eq(profile.getLanguage()));
   }
 
   @Test
@@ -427,14 +469,16 @@ public class QProfileRuleImplTest {
     RuleDefinitionDto rule = createRule();
     QProfileDto profile = createProfile(rule);
     RuleActivation activation = RuleActivation.create(rule.getUuid());
-    activate(profile, activation);
+    List<ActiveRuleChange> changes = activate(profile, activation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
 
     rule.setStatus(RuleStatus.REMOVED);
     db.getDbClient().ruleDao().update(db.getSession(), rule);
 
-    List<ActiveRuleChange> changes = deactivate(profile, rule);
+    changes = deactivate(profile, rule);
     verifyNoActiveRules();
     assertThatChangeIsDeactivation(changes, rule);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(profile.getLanguage()));
   }
 
   @Test
@@ -448,6 +492,7 @@ public class QProfileRuleImplTest {
     assertThatProfileHasNoActiveRules(parentProfile);
     assertThatRuleIsActivated(childProfile, rule, changes, rule.getSeverityString(), null, emptyMap());
     assertThatRuleIsActivated(grandChildProfile, rule, changes, rule.getSeverityString(), INHERITED, emptyMap());
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), any(), eq(childProfile.getLanguage()));
   }
 
   @Test
@@ -460,17 +505,20 @@ public class QProfileRuleImplTest {
 
     System.out.println("ACTIVATE ON " + childProfile.getName());
     RuleActivation initialActivation = RuleActivation.create(rule.getUuid(), MAJOR, of(param.getName(), "foo"));
-    activate(childProfile, initialActivation);
+    List<ActiveRuleChange> changes = activate(childProfile, initialActivation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(childProfile.getLanguage()));
 
     System.out.println("---------------");
     System.out.println("ACTIVATE ON " + childProfile.getName());
     RuleActivation updateActivation = RuleActivation.create(rule.getUuid(), CRITICAL, of(param.getName(), "bar"));
-    List<ActiveRuleChange> changes = activate(childProfile, updateActivation);
+    changes = activate(childProfile, updateActivation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(childProfile.getLanguage()));
 
     assertThatProfileHasNoActiveRules(parentProfile);
     assertThatRuleIsUpdated(childProfile, rule, CRITICAL, null, of(param.getName(), "bar"));
     assertThatRuleIsUpdated(grandChildProfile, rule, CRITICAL, INHERITED, of(param.getName(), "bar"));
     assertThat(changes).hasSize(2);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(childProfile.getLanguage()));
   }
 
   @Test
@@ -482,15 +530,17 @@ public class QProfileRuleImplTest {
     QProfileDto grandChildProfile = createChildProfile(childProfile);
 
     RuleActivation initialActivation = RuleActivation.create(rule.getUuid(), MAJOR, of(param.getName(), "foo"));
-    activate(childProfile, initialActivation);
+    List<ActiveRuleChange> changes = activate(childProfile, initialActivation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(childProfile.getLanguage()));
 
     RuleActivation overrideActivation = RuleActivation.create(rule.getUuid(), CRITICAL, of(param.getName(), "bar"));
-    List<ActiveRuleChange> changes = activate(grandChildProfile, overrideActivation);
+    changes = activate(grandChildProfile, overrideActivation);
 
     assertThatProfileHasNoActiveRules(parentProfile);
     assertThatRuleIsUpdated(childProfile, rule, MAJOR, null, of(param.getName(), "foo"));
     assertThatRuleIsUpdated(grandChildProfile, rule, CRITICAL, ActiveRuleInheritance.OVERRIDES, of(param.getName(), "bar"));
     assertThat(changes).hasSize(1);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(childProfile.getLanguage()));
   }
 
   @Test
@@ -502,19 +552,22 @@ public class QProfileRuleImplTest {
     QProfileDto grandChildProfile = createChildProfile(childProfile);
 
     RuleActivation initialActivation = RuleActivation.create(rule.getUuid(), MAJOR, of(param.getName(), "foo"));
-    activate(childProfile, initialActivation);
+    List<ActiveRuleChange> changes = activate(childProfile, initialActivation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(childProfile.getLanguage()));
 
     RuleActivation overrideActivation = RuleActivation.create(rule.getUuid(), CRITICAL, of(param.getName(), "bar"));
-    activate(grandChildProfile, overrideActivation);
+    changes = activate(grandChildProfile, overrideActivation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(grandChildProfile.getLanguage()));
 
     // update child --> do not touch grandChild
     RuleActivation updateActivation = RuleActivation.create(rule.getUuid(), BLOCKER, of(param.getName(), "baz"));
-    List<ActiveRuleChange> changes = activate(childProfile, updateActivation);
+    changes = activate(childProfile, updateActivation);
 
     assertThatProfileHasNoActiveRules(parentProfile);
     assertThatRuleIsUpdated(childProfile, rule, BLOCKER, null, of(param.getName(), "baz"));
     assertThatRuleIsUpdated(grandChildProfile, rule, CRITICAL, ActiveRuleInheritance.OVERRIDES, of(param.getName(), "bar"));
     assertThat(changes).hasSize(1);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(childProfile.getLanguage()));
   }
 
   @Test
@@ -526,19 +579,22 @@ public class QProfileRuleImplTest {
     QProfileDto grandChildProfile = createChildProfile(childProfile);
 
     RuleActivation initialActivation = RuleActivation.create(rule.getUuid(), MAJOR, of(param.getName(), "foo"));
-    activate(parentProfile, initialActivation);
+    List<ActiveRuleChange> changes = activate(parentProfile, initialActivation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(parentProfile.getLanguage()));
 
     RuleActivation overrideActivation = RuleActivation.create(rule.getUuid(), CRITICAL, of(param.getName(), "bar"));
-    activate(grandChildProfile, overrideActivation);
+    changes = activate(grandChildProfile, overrideActivation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(grandChildProfile.getLanguage()));
 
     // reset parent --> touch child but not grandChild
     RuleActivation updateActivation = RuleActivation.createReset(rule.getUuid());
-    List<ActiveRuleChange> changes = activate(parentProfile, updateActivation);
+    changes = activate(parentProfile, updateActivation);
 
     assertThatRuleIsUpdated(parentProfile, rule, rule.getSeverityString(), null, of(param.getName(), param.getDefaultValue()));
     assertThatRuleIsUpdated(childProfile, rule, rule.getSeverityString(), INHERITED, of(param.getName(), param.getDefaultValue()));
     assertThatRuleIsUpdated(grandChildProfile, rule, CRITICAL, ActiveRuleInheritance.OVERRIDES, of(param.getName(), "bar"));
     assertThat(changes).hasSize(2);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(parentProfile.getLanguage()));
   }
 
   @Test
@@ -549,14 +605,16 @@ public class QProfileRuleImplTest {
     QProfileDto childProfile = createChildProfile(parentProfile);
 
     RuleActivation childActivation = RuleActivation.create(rule.getUuid(), MAJOR, of(param.getName(), "foo"));
-    activate(childProfile, childActivation);
+    List<ActiveRuleChange> changes = activate(childProfile, childActivation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(childProfile.getLanguage()));
 
     RuleActivation parentActivation = RuleActivation.create(rule.getUuid(), CRITICAL, of(param.getName(), "bar"));
-    List<ActiveRuleChange> changes = activate(parentProfile, parentActivation);
+    changes = activate(parentProfile, parentActivation);
 
     assertThatRuleIsUpdated(parentProfile, rule, CRITICAL, null, of(param.getName(), "bar"));
     assertThatRuleIsUpdated(childProfile, rule, MAJOR, ActiveRuleInheritance.OVERRIDES, of(param.getName(), "foo"));
     assertThat(changes).hasSize(2);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(parentProfile.getLanguage()));
   }
 
   @Test
@@ -567,13 +625,15 @@ public class QProfileRuleImplTest {
     QProfileDto childProfile = createChildProfile(parentProfile);
 
     RuleActivation parentActivation = RuleActivation.create(rule.getUuid(), MAJOR, of(param.getName(), "foo"));
-    activate(parentProfile, parentActivation);
+    List<ActiveRuleChange> changes = activate(parentProfile, parentActivation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(parentProfile.getLanguage()));
 
     RuleActivation overrideActivation = RuleActivation.create(rule.getUuid(), MAJOR, of(param.getName(), "foo"));
-    List<ActiveRuleChange> changes = activate(childProfile, overrideActivation);
+    changes = activate(childProfile, overrideActivation);
 
     assertThatRuleIsUpdated(childProfile, rule, MAJOR, INHERITED, of(param.getName(), "foo"));
     assertThat(changes).isEmpty();
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(childProfile.getLanguage()));
   }
 
   @Test
@@ -586,11 +646,13 @@ public class QProfileRuleImplTest {
     List<ActiveRuleChange> changes = activate(parentProfile, activation);
     assertThatRuleIsActivated(parentProfile, rule, changes, rule.getSeverityString(), null, emptyMap());
     assertThatRuleIsActivated(childProfile, rule, changes, rule.getSeverityString(), INHERITED, emptyMap());
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(parentProfile.getLanguage()));
 
     changes = deactivate(parentProfile, rule);
     assertThatProfileHasNoActiveRules(parentProfile);
     assertThatProfileHasNoActiveRules(childProfile);
     assertThat(changes).hasSize(2);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(parentProfile.getLanguage()));
   }
 
   @Test
@@ -603,14 +665,17 @@ public class QProfileRuleImplTest {
     List<ActiveRuleChange> changes = activate(parentProfile, activation);
     assertThatRuleIsActivated(parentProfile, rule, changes, rule.getSeverityString(), null, emptyMap());
     assertThatRuleIsActivated(childProfile, rule, changes, rule.getSeverityString(), INHERITED, emptyMap());
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(parentProfile.getLanguage()));
 
     activation = RuleActivation.create(rule.getUuid(), CRITICAL, null);
-    activate(childProfile, activation);
+    changes = activate(childProfile, activation);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(childProfile.getLanguage()));
 
     changes = deactivate(parentProfile, rule);
     assertThatProfileHasNoActiveRules(parentProfile);
     assertThatProfileHasNoActiveRules(childProfile);
     assertThat(changes).hasSize(2);
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), eq(changes), eq(parentProfile.getLanguage()));
   }
 
   @Test
@@ -627,6 +692,7 @@ public class QProfileRuleImplTest {
     assertThatThrownBy(() -> deactivate(childProfile, rule))
       .isInstanceOf(BadRequestException.class)
       .hasMessageContaining("Cannot deactivate inherited rule");
+    verify(qualityProfileChangeEventService).distributeRuleChangeEvent(any(), any(), eq(parentProfile.getLanguage()));
   }
 
   @Test
@@ -651,6 +717,7 @@ public class QProfileRuleImplTest {
     assertThatRuleIsUpdated(childProfile, rule, CRITICAL, INHERITED, emptyMap());
     assertThatRuleIsUpdated(parentProfile, rule, CRITICAL, null, emptyMap());
     assertThat(changes).hasSize(1);
+
   }
 
   @Test

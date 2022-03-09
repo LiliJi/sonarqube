@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -42,11 +42,12 @@ import org.sonar.db.rule.RuleTesting;
 import org.sonar.server.es.EsTester;
 import org.sonar.server.exceptions.BadRequestException;
 import org.sonar.server.exceptions.ForbiddenException;
+import org.sonar.server.pushapi.qualityprofile.QualityProfileChangeEventService;
 import org.sonar.server.qualityprofile.QProfileExporters;
 import org.sonar.server.qualityprofile.QProfileFactoryImpl;
 import org.sonar.server.qualityprofile.QProfileRules;
 import org.sonar.server.qualityprofile.QProfileRulesImpl;
-import org.sonar.server.qualityprofile.RuleActivator;
+import org.sonar.server.qualityprofile.builtin.RuleActivator;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 import org.sonar.server.rule.index.RuleIndex;
 import org.sonar.server.rule.index.RuleIndexer;
@@ -62,6 +63,7 @@ import org.sonarqube.ws.Qualityprofiles.CreateWsResponse.QualityProfile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 import static org.sonar.db.permission.GlobalPermission.ADMINISTER_QUALITY_PROFILES;
 import static org.sonar.db.permission.GlobalPermission.SCAN;
 import static org.sonar.server.language.LanguageTesting.newLanguages;
@@ -87,8 +89,9 @@ public class CreateActionTest {
   private RuleIndexer ruleIndexer = new RuleIndexer(es.client(), dbClient);
   private ActiveRuleIndexer activeRuleIndexer = new ActiveRuleIndexer(dbClient, es.client());
   private ProfileImporter[] profileImporters = createImporters();
+  private QualityProfileChangeEventService qualityProfileChangeEventService = mock(QualityProfileChangeEventService.class);
   private RuleActivator ruleActivator = new RuleActivator(System2.INSTANCE, dbClient, null, userSession);
-  private QProfileRules qProfileRules = new QProfileRulesImpl(dbClient, ruleActivator, ruleIndex, activeRuleIndexer);
+  private QProfileRules qProfileRules = new QProfileRulesImpl(dbClient, ruleActivator, ruleIndex, activeRuleIndexer, qualityProfileChangeEventService);
   private QProfileExporters qProfileExporters = new QProfileExporters(dbClient, null, qProfileRules, profileImporters);
 
   private CreateAction underTest = new CreateAction(dbClient, new QProfileFactoryImpl(dbClient, UuidFactoryFast.getInstance(), System2.INSTANCE, activeRuleIndexer),

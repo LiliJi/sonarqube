@@ -10,12 +10,13 @@ exports[`should render correctly 1`] = `
   <Helmet
     defer={false}
     encodeSpecialCharacters={true}
+    prioritizeSeoTags={false}
     title="global_permissions.permission"
   />
   <PageHeader
     loading={true}
   />
-  <Connect(AllHoldersList)
+  <withAppStateContext(AllHoldersList)
     filter="all"
     grantPermissionToGroup={[Function]}
     grantPermissionToUser={[Function]}
@@ -43,12 +44,13 @@ exports[`should render correctly 2`] = `
   <Helmet
     defer={false}
     encodeSpecialCharacters={true}
+    prioritizeSeoTags={false}
     title="global_permissions.permission"
   />
   <PageHeader
     loading={false}
   />
-  <Connect(AllHoldersList)
+  <withAppStateContext(AllHoldersList)
     filter="all"
     grantPermissionToGroup={[Function]}
     grantPermissionToUser={[Function]}

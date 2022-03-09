@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -94,7 +94,7 @@ export default class HotspotReviewHistoryAndComments extends React.PureComponent
     return (
       <div className="padded it__hs-review-history">
         {isLoggedIn(currentUser) && (
-          <div className="big-spacer-top">
+          <div>
             <div className="little-spacer-bottom">{translate('hotspots.comment.field')}</div>
             <textarea
               className="form-field fixed-width width-100 spacer-bottom"

@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should render correctly: closed 1`] = `
-<div>
+<div
+  className="display-flex-row display-flex-end"
+>
   <StatusDescription
     showTitle={true}
     statusOption="FIXED"
@@ -14,7 +16,7 @@ exports[`should render correctly: closed 1`] = `
       placement="bottom"
     >
       <div
-        className="dropdown display-inline-block"
+        className="dropdown"
       >
         <Toggler
           closeOnClickOutside={true}
@@ -54,6 +56,21 @@ exports[`should render correctly: closed 1`] = `
                       "qualifier": "FIL",
                     },
                     "creationDate": "2013-05-13T17:55:41+0200",
+                    "flows": Array [
+                      Object {
+                        "locations": Array [
+                          Object {
+                            "component": "main.js",
+                            "textRange": Object {
+                              "endLine": 2,
+                              "endOffset": 2,
+                              "startLine": 1,
+                              "startOffset": 1,
+                            },
+                          },
+                        ],
+                      },
+                    ],
                     "key": "01fc972e-2a3c-433e-bcae-0bd7f88f5123",
                     "line": 142,
                     "message": "'3' is a magic number.",
@@ -104,7 +121,7 @@ exports[`should render correctly: closed 1`] = `
           }
         >
           <Button
-            className="dropdown-toggle"
+            className="dropdown-toggle big-spacer-left"
             disabled={false}
             id="status-trigger"
             onClick={[Function]}
@@ -124,7 +141,9 @@ exports[`should render correctly: closed 1`] = `
 `;
 
 exports[`should render correctly: open 1`] = `
-<div>
+<div
+  className="display-flex-row display-flex-end"
+>
   <StatusDescription
     showTitle={true}
     statusOption="FIXED"
@@ -137,7 +156,7 @@ exports[`should render correctly: open 1`] = `
       placement="bottom"
     >
       <div
-        className="dropdown display-inline-block"
+        className="dropdown"
       >
         <Toggler
           closeOnClickOutside={true}
@@ -177,6 +196,21 @@ exports[`should render correctly: open 1`] = `
                       "qualifier": "FIL",
                     },
                     "creationDate": "2013-05-13T17:55:41+0200",
+                    "flows": Array [
+                      Object {
+                        "locations": Array [
+                          Object {
+                            "component": "main.js",
+                            "textRange": Object {
+                              "endLine": 2,
+                              "endOffset": 2,
+                              "startLine": 1,
+                              "startOffset": 1,
+                            },
+                          },
+                        ],
+                      },
+                    ],
                     "key": "01fc972e-2a3c-433e-bcae-0bd7f88f5123",
                     "line": 142,
                     "message": "'3' is a magic number.",
@@ -227,7 +261,7 @@ exports[`should render correctly: open 1`] = `
           }
         >
           <Button
-            className="dropdown-toggle"
+            className="dropdown-toggle big-spacer-left"
             disabled={false}
             id="status-trigger"
             onClick={[Function]}
@@ -247,7 +281,9 @@ exports[`should render correctly: open 1`] = `
 `;
 
 exports[`should render correctly: readonly 1`] = `
-<div>
+<div
+  className="display-flex-row display-flex-end"
+>
   <StatusDescription
     showTitle={true}
     statusOption="FIXED"
@@ -260,7 +296,7 @@ exports[`should render correctly: readonly 1`] = `
       placement="bottom"
     >
       <div
-        className="dropdown display-inline-block"
+        className="dropdown"
       >
         <Toggler
           closeOnClickOutside={true}
@@ -300,6 +336,21 @@ exports[`should render correctly: readonly 1`] = `
                       "qualifier": "FIL",
                     },
                     "creationDate": "2013-05-13T17:55:41+0200",
+                    "flows": Array [
+                      Object {
+                        "locations": Array [
+                          Object {
+                            "component": "main.js",
+                            "textRange": Object {
+                              "endLine": 2,
+                              "endOffset": 2,
+                              "startLine": 1,
+                              "startOffset": 1,
+                            },
+                          },
+                        ],
+                      },
+                    ],
                     "key": "01fc972e-2a3c-433e-bcae-0bd7f88f5123",
                     "line": 142,
                     "message": "'3' is a magic number.",
@@ -350,7 +401,7 @@ exports[`should render correctly: readonly 1`] = `
           }
         >
           <Button
-            className="dropdown-toggle"
+            className="dropdown-toggle big-spacer-left"
             disabled={true}
             id="status-trigger"
             onClick={[Function]}

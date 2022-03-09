@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -26,6 +26,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
+import org.sonar.core.util.RuleActivationListener;
+import org.sonar.core.util.RuleSetChangedEvent;
 import org.sonar.process.ProcessId;
 
 public interface HazelcastMember extends AutoCloseable {
@@ -105,6 +107,10 @@ public interface HazelcastMember extends AutoCloseable {
    * @throws java.util.concurrent.RejectedExecutionException if no member is selected
    */
   <T> void callAsync(DistributedCall<T> callable, MemberSelector memberSelector, DistributedCallback<T> callback);
+
+  void subscribeRuleActivationTopic(RuleActivationListener listener);
+
+  void publishEvent(RuleSetChangedEvent event);
 
   @Override
   void close();

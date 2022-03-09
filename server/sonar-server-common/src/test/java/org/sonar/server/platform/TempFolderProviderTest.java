@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -31,12 +31,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class TempFolderProviderTest {
-
-
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
-  TempFolderProvider underTest = new TempFolderProvider();
+  private final TempFolderProvider underTest = new TempFolderProvider();
 
   @Test
   public void existing_temp_dir() throws Exception {

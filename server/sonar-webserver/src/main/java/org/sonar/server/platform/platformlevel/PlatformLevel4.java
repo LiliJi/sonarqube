@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -35,7 +35,6 @@ import org.sonar.alm.client.gitlab.GitlabGlobalSettingsValidator;
 import org.sonar.alm.client.gitlab.GitlabHttpClient;
 import org.sonar.api.profiles.XMLProfileParser;
 import org.sonar.api.profiles.XMLProfileSerializer;
-import org.sonar.api.resources.Languages;
 import org.sonar.api.resources.ResourceTypes;
 import org.sonar.api.rules.AnnotationRuleParser;
 import org.sonar.api.server.rule.RulesDefinitionXmlLoader;
@@ -51,8 +50,9 @@ import org.sonar.ce.task.projectanalysis.taskprocessor.ReportTaskProcessor;
 import org.sonar.ce.task.projectexport.taskprocessor.ProjectExportTaskProcessor;
 import org.sonar.core.component.DefaultResourceTypes;
 import org.sonar.core.extension.CoreExtensionsInstaller;
-import org.sonar.core.platform.ComponentContainer;
+import org.sonar.core.language.LanguagesProvider;
 import org.sonar.core.platform.PlatformEditionProvider;
+import org.sonar.core.platform.SpringComponentContainer;
 import org.sonar.server.almintegration.ws.AlmIntegrationsWSModule;
 import org.sonar.server.almintegration.ws.CredentialsEncoderHelper;
 import org.sonar.server.almintegration.ws.ImportHelper;
@@ -131,6 +131,7 @@ import org.sonar.server.monitoring.ElasticSearchMetricTask;
 import org.sonar.server.monitoring.MainCollector;
 import org.sonar.server.monitoring.MonitoringWsModule;
 import org.sonar.server.monitoring.ServerMonitoringMetrics;
+import org.sonar.server.monitoring.SonarLintConnectedClientsTask;
 import org.sonar.server.monitoring.WebUptimeTask;
 import org.sonar.server.monitoring.ce.NumberOfTasksInQueueTask;
 import org.sonar.server.monitoring.ce.RecentTasksDurationTask;
@@ -175,18 +176,21 @@ import org.sonar.server.plugins.ws.PluginUpdateAggregator;
 import org.sonar.server.plugins.ws.PluginsWs;
 import org.sonar.server.plugins.ws.UninstallAction;
 import org.sonar.server.plugins.ws.UpdatesAction;
+import org.sonar.server.project.ProjectQGChangeEventListener;
 import org.sonar.server.project.ws.ProjectsWsModule;
 import org.sonar.server.projectanalysis.ws.ProjectAnalysisWsModule;
 import org.sonar.server.projectlink.ws.ProjectLinksModule;
 import org.sonar.server.projecttag.ws.ProjectTagsWsModule;
 import org.sonar.server.property.InternalPropertiesImpl;
+import org.sonar.server.pushapi.ServerPushWsModule;
 import org.sonar.server.qualitygate.ProjectsInWarningModule;
 import org.sonar.server.qualitygate.QualityGateModule;
 import org.sonar.server.qualitygate.notification.QGChangeNotificationHandler;
 import org.sonar.server.qualitygate.ws.QualityGateWsModule;
-import org.sonar.server.qualityprofile.BuiltInQPChangeNotificationHandler;
-import org.sonar.server.qualityprofile.BuiltInQPChangeNotificationTemplate;
-import org.sonar.server.qualityprofile.BuiltInQProfileRepositoryImpl;
+import org.sonar.server.qualityprofile.builtin.BuiltInQPChangeNotificationHandler;
+import org.sonar.server.qualityprofile.builtin.BuiltInQPChangeNotificationTemplate;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileRepositoryImpl;
+import org.sonar.server.pushapi.qualityprofile.DistributedRuleActivatorEventsDistributor;
 import org.sonar.server.qualityprofile.QProfileBackuperImpl;
 import org.sonar.server.qualityprofile.QProfileComparison;
 import org.sonar.server.qualityprofile.QProfileCopier;
@@ -196,7 +200,9 @@ import org.sonar.server.qualityprofile.QProfileParser;
 import org.sonar.server.qualityprofile.QProfileResetImpl;
 import org.sonar.server.qualityprofile.QProfileRulesImpl;
 import org.sonar.server.qualityprofile.QProfileTreeImpl;
-import org.sonar.server.qualityprofile.RuleActivator;
+import org.sonar.server.pushapi.qualityprofile.QualityProfileChangeEventServiceImpl;
+import org.sonar.server.qualityprofile.builtin.RuleActivator;
+import org.sonar.server.pushapi.qualityprofile.StandaloneRuleActivatorEventsDistributor;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 import org.sonar.server.qualityprofile.ws.QProfilesWsModule;
 import org.sonar.server.root.ws.RootWsModule;
@@ -270,7 +276,10 @@ public class PlatformLevel4 extends PlatformLevel {
       MetadataIndexImpl.class,
       EsDbCompatibilityImpl.class);
 
-    addIfCluster(NodeHealthModule.class);
+    addIfCluster(new NodeHealthModule());
+
+    addIfCluster(DistributedRuleActivatorEventsDistributor.class);
+    addIfStandalone(StandaloneRuleActivatorEventsDistributor.class);
 
     add(
       ClusterVerification.class,
@@ -285,13 +294,13 @@ public class PlatformLevel4 extends PlatformLevel {
       ServerWs.class,
       IndexDefinitions.class,
       WebAnalyticsLoaderImpl.class,
-      MonitoringWsModule.class,
+      new MonitoringWsModule(),
 
       // batch
-      BatchWsModule.class,
+      new BatchWsModule(),
 
       // update center
-      UpdateCenterModule.class,
+      new UpdateCenterModule(),
 
       // quality profile
       BuiltInQProfileRepositoryImpl.class,
@@ -302,13 +311,14 @@ public class PlatformLevel4 extends PlatformLevel {
       QProfileTreeImpl.class,
       QProfileRulesImpl.class,
       RuleActivator.class,
+      QualityProfileChangeEventServiceImpl.class,
       QProfileExporters.class,
       QProfileFactoryImpl.class,
       QProfileCopier.class,
       QProfileBackuperImpl.class,
       QProfileParser.class,
       QProfileResetImpl.class,
-      QProfilesWsModule.class,
+      new QProfilesWsModule(),
 
       // rule
       RuleIndexDefinition.class,
@@ -336,24 +346,24 @@ public class PlatformLevel4 extends PlatformLevel {
       org.sonar.server.rule.ws.AppAction.class,
 
       // languages
-      Languages.class,
+      LanguagesProvider.class,
       LanguageWs.class,
       LanguageValidation.class,
       org.sonar.server.language.ws.ListAction.class,
 
       // measure
-      MetricsWsModule.class,
-      MeasuresWsModule.class,
+      new MetricsWsModule(),
+      new MeasuresWsModule(),
       MetricFinder.class,
       UnanalyzedLanguageMetrics.class,
 
-      QualityGateModule.class,
-      ProjectsInWarningModule.class,
-      QualityGateWsModule.class,
+      new QualityGateModule(),
+      new ProjectsInWarningModule(),
+      new QualityGateWsModule(),
 
       // web services
       WebServiceEngine.class,
-      WebServicesWsModule.class,
+      new WebServicesWsModule(),
       SonarLintConnectionFilter.class,
       WebServiceFilter.class,
       WebServiceReroutingFilter.class,
@@ -363,13 +373,13 @@ public class PlatformLevel4 extends PlatformLevel {
       org.sonar.server.platform.ws.IndexAction.class,
 
       // authentication
-      AuthenticationModule.class,
-      AuthenticationWsModule.class,
-      BitbucketModule.class,
-      GitHubModule.class,
-      GitLabModule.class,
-      LdapModule.class,
-      SamlModule.class,
+      new AuthenticationModule(),
+      new AuthenticationWsModule(),
+      new BitbucketModule(),
+      new GitHubModule(),
+      new GitLabModule(),
+      new LdapModule(),
+      new SamlModule(),
       DefaultAdminCredentialsVerifierImpl.class,
       DefaultAdminCredentialsVerifierNotificationTemplate.class,
       DefaultAdminCredentialsVerifierNotificationHandler.class,
@@ -382,29 +392,29 @@ public class PlatformLevel4 extends PlatformLevel {
       UserIndexer.class,
       UserIndex.class,
       UserUpdater.class,
-      UsersWsModule.class,
-      UserTokenModule.class,
-      UserTokenWsModule.class,
+      new UsersWsModule(),
+      new UserTokenModule(),
+      new UserTokenWsModule(),
 
       // groups
-      UserGroupsModule.class,
+      new UserGroupsModule(),
       DefaultGroupFinder.class,
 
       // permissions
       DefaultTemplatesResolverImpl.class,
-      PermissionsWsModule.class,
+      new PermissionsWsModule(),
       PermissionTemplateService.class,
       PermissionUpdater.class,
       UserPermissionChanger.class,
       GroupPermissionChanger.class,
 
       // components
-      BranchWsModule.class,
-      PullRequestWsModule.class,
-      ProjectsWsModule.class,
-      ProjectsEsModule.class,
-      ProjectTagsWsModule.class,
-      ComponentsWsModule.class,
+      new BranchWsModule(),
+      new PullRequestWsModule(),
+      new ProjectsWsModule(),
+      new ProjectsEsModule(),
+      new ProjectTagsWsModule(),
+      new ComponentsWsModule(),
       ComponentService.class,
       ComponentUpdater.class,
       ComponentFinder.class,
@@ -414,13 +424,13 @@ public class PlatformLevel4 extends PlatformLevel {
       ComponentIndexDefinition.class,
       ComponentIndex.class,
       ComponentIndexer.class,
-      LiveMeasureModule.class,
+      new LiveMeasureModule(),
       ComponentViewerJsonWriter.class,
 
-      DevelopersWsModule.class,
+      new DevelopersWsModule(),
 
-      FavoriteModule.class,
-      FavoriteWsModule.class,
+      new FavoriteModule(),
+      new FavoriteWsModule(),
 
       // views
       ViewIndexDefinition.class,
@@ -433,10 +443,10 @@ public class PlatformLevel4 extends PlatformLevel {
       IssueIndexer.class,
       IssueIteratorFactory.class,
       PermissionIndexer.class,
-      IssueWsModule.class,
+      new IssueWsModule(),
       NewIssuesEmailTemplate.class,
       MyNewIssuesEmailTemplate.class,
-      IssuesChangesNotificationModule.class,
+      new IssuesChangesNotificationModule(),
       NewIssuesNotificationHandler.class,
       NewIssuesNotificationHandler.newMetadata(),
       MyNewIssuesNotificationHandler.class,
@@ -453,10 +463,10 @@ public class PlatformLevel4 extends PlatformLevel {
       IssueChangePostProcessorImpl.class,
 
       // hotspots
-      HotspotsWsModule.class,
+      new HotspotsWsModule(),
 
       // source
-      SourceWsModule.class,
+      new SourceWsModule(),
 
       // Duplications
       DuplicationsParser.class,
@@ -473,31 +483,31 @@ public class PlatformLevel4 extends PlatformLevel {
       BuiltInQPChangeNotificationTemplate.class,
       BuiltInQPChangeNotificationHandler.class,
 
-      NotificationModule.class,
-      NotificationWsModule.class,
-      EmailsWsModule.class,
+      new NotificationModule(),
+      new NotificationWsModule(),
+      new EmailsWsModule(),
 
       // Settings
       ProjectConfigurationLoaderImpl.class,
       PersistentSettings.class,
-      SettingsWsModule.class,
+      new SettingsWsModule(),
 
-      TypeValidationModule.class,
+      new TypeValidationModule(),
 
       // New Code Periods
-      NewCodePeriodsWsModule.class,
+      new NewCodePeriodsWsModule(),
 
       // Project Links
-      ProjectLinksModule.class,
+      new ProjectLinksModule(),
 
       // Project Analyses
-      ProjectAnalysisWsModule.class,
+      new ProjectAnalysisWsModule(),
 
       // System
       ServerLogging.class,
-      ChangeLogLevelServiceModule.class,
-      HealthCheckerModule.class,
-      SystemWsModule.class,
+      new ChangeLogLevelServiceModule(getWebServer()),
+      new HealthCheckerModule(getWebServer()),
+      new SystemWsModule(),
 
       // Plugins WS
       PluginUpdateAggregator.class,
@@ -523,7 +533,7 @@ public class PlatformLevel4 extends PlatformLevel {
       BitbucketCloudRestClient.class,
       GitlabHttpClient.class,
       AzureDevOpsHttpClient.class,
-      AlmIntegrationsWSModule.class,
+      new AlmIntegrationsWSModule(),
       BitbucketCloudValidator.class,
       BitbucketServerSettingsValidator.class,
       GithubGlobalSettingsValidator.class,
@@ -531,16 +541,16 @@ public class PlatformLevel4 extends PlatformLevel {
       AzureDevOpsValidator.class,
 
       // ALM settings
-      AlmSettingsWsModule.class,
+      new AlmSettingsWsModule(),
 
       // Project export
-      ProjectExportWsModule.class,
+      new ProjectExportWsModule(),
 
       // Branch
       BranchFeatureProxyImpl.class,
 
       // Project badges
-      ProjectBadgesWsModule.class,
+      new ProjectBadgesWsModule(),
 
       // Core Extensions
       CoreExtensionBootstraper.class,
@@ -548,10 +558,13 @@ public class PlatformLevel4 extends PlatformLevel {
 
       MultipleAlmFeatureProvider.class,
 
+      // ServerPush endpoints
+      new ServerPushWsModule(),
+
       // Compute engine (must be after Views and Developer Cockpit)
-      ReportAnalysisFailureNotificationModule.class,
-      CeModule.class,
-      CeWsModule.class,
+      new ReportAnalysisFailureNotificationModule(),
+      new CeModule(),
+      new CeWsModule(),
       ReportTaskProcessor.class,
       IssueSyncTaskProcessor.class,
       AuditPurgeTaskProcessor.class,
@@ -563,18 +576,20 @@ public class PlatformLevel4 extends PlatformLevel {
       InternalPropertiesImpl.class,
 
       // UI
-      NavigationWsModule.class,
+      new NavigationWsModule(),
 
       // root
-      RootWsModule.class,
+      new RootWsModule(),
 
       // webhooks
       WebhookQGChangeEventListener.class,
-      WebhookModule.class,
-      WebhooksWsModule.class,
+      new WebhookModule(),
+      new WebhooksWsModule(),
+
+      ProjectQGChangeEventListener.class,
 
       // Http Request ID
-      HttpRequestIdModule.class,
+      new HttpRequestIdModule(),
 
       RecoveryIndexer.class,
       ProjectIndexersImpl.class,
@@ -599,6 +614,7 @@ public class PlatformLevel4 extends PlatformLevel {
       ComputeEngineMetricStatusTask.class,
       ElasticSearchMetricTask.class,
       WebUptimeTask.class,
+      SonarLintConnectedClientsTask.class,
 
       MainCollector.class,
 
@@ -607,21 +623,23 @@ public class PlatformLevel4 extends PlatformLevel {
     );
 
     // system info
-    add(SystemInfoWriterModule.class);
+    add(new SystemInfoWriterModule(getWebServer()));
 
     addAll(level4AddedComponents);
   }
 
   @Override
   public PlatformLevel start() {
-    ComponentContainer container = getContainer();
-    CoreExtensionsInstaller coreExtensionsInstaller = get(WebCoreExtensionsInstaller.class);
+    SpringComponentContainer container = getContainer();
+    CoreExtensionsInstaller coreExtensionsInstaller = parent.get(WebCoreExtensionsInstaller.class);
     coreExtensionsInstaller.install(container, hasPlatformLevel4OrNone(), noAdditionalSideFilter());
-    ServerExtensionInstaller extensionInstaller = get(ServerExtensionInstaller.class);
+
+    ServerExtensionInstaller extensionInstaller = parent.get(ServerExtensionInstaller.class);
     extensionInstaller.installExtensions(container);
 
     super.start();
 
     return this;
   }
+
 }

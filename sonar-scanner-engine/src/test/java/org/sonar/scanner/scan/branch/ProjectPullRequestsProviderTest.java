@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -39,14 +39,6 @@ public class ProjectPullRequestsProviderTest {
     mockLoader = mock(ProjectPullRequestsLoader.class);
     pullRequests = new ProjectPullRequests(emptyList());
     scannerProperties = mock(ScannerProperties.class);
-  }
-
-  @Test
-  public void cache_pull_requests() {
-    when(scannerProperties.getProjectKey()).thenReturn("project");
-    ProjectPullRequests pullRequests = provider.provide(null, scannerProperties);
-
-    assertThat(provider.provide(null, scannerProperties)).isSameAs(pullRequests);
   }
 
   @Test

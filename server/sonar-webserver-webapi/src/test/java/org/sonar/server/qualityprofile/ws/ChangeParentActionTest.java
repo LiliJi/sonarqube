@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -48,8 +48,9 @@ import org.sonar.server.es.SearchOptions;
 import org.sonar.server.exceptions.BadRequestException;
 import org.sonar.server.exceptions.ForbiddenException;
 import org.sonar.server.language.LanguageTesting;
+import org.sonar.server.pushapi.qualityprofile.QualityProfileChangeEventService;
 import org.sonar.server.qualityprofile.QProfileTreeImpl;
-import org.sonar.server.qualityprofile.RuleActivator;
+import org.sonar.server.qualityprofile.builtin.RuleActivator;
 import org.sonar.server.qualityprofile.index.ActiveRuleIndexer;
 import org.sonar.server.rule.index.RuleIndex;
 import org.sonar.server.rule.index.RuleIndexer;
@@ -64,6 +65,7 @@ import static java.util.Arrays.asList;
 import static org.apache.commons.lang.RandomStringUtils.randomAlphanumeric;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
 import static org.sonar.db.permission.GlobalPermission.ADMINISTER_QUALITY_PROFILES;
 import static org.sonarqube.ws.client.qualityprofile.QualityProfileWsParameters.PARAM_LANGUAGE;
 import static org.sonarqube.ws.client.qualityprofile.QualityProfileWsParameters.PARAM_PARENT_QUALITY_PROFILE;
@@ -98,7 +100,7 @@ public class ChangeParentActionTest {
     activeRuleIndexer = new ActiveRuleIndexer(dbClient, esClient);
     TypeValidations typeValidations = new TypeValidations(Collections.emptyList());
     RuleActivator ruleActivator = new RuleActivator(System2.INSTANCE, dbClient, typeValidations, userSession);
-    qProfileTree = new QProfileTreeImpl(dbClient, ruleActivator, System2.INSTANCE, activeRuleIndexer);
+    qProfileTree = new QProfileTreeImpl(dbClient, ruleActivator, System2.INSTANCE, activeRuleIndexer, mock(QualityProfileChangeEventService.class));
     ChangeParentAction underTest = new ChangeParentAction(
       dbClient,
       qProfileTree,

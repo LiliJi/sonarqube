@@ -46,6 +46,8 @@ message SearchWsResponse {
     optional string author = 11;
     optional string creationDate = 12;
     optional string updateDate = 13;
+    optional sonarqube.ws.commons.TextRange textRange = 14;
+    repeated sonarqube.ws.commons.Flow flows = 15;
   }
 }
 
@@ -69,6 +71,7 @@ message ShowWsResponse {
   repeated sonarqube.ws.commons.Comment comment = 15;
   repeated sonarqube.ws.commons.User users = 16;
   optional bool canChangeStatus = 17;
+  repeated sonarqube.ws.commons.Flow flows = 19;
 }
 
 message Component {

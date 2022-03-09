@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -37,8 +37,11 @@ interface Props {
   loadingMore: boolean;
   onHotspotClick: (hotspot: RawHotspot) => void;
   onLoadMore: () => void;
+  onLocationClick: (index: number) => void;
+  onScroll: (element: Element) => void;
   securityCategories: StandardSecurityCategories;
   selectedHotspot: RawHotspot;
+  selectedHotspotLocation?: number;
   statusFilter: HotspotStatusFilter;
 }
 
@@ -83,6 +86,14 @@ export default class HotspotList extends React.Component<Props, State> {
       );
       this.setState({ groupedHotspots });
     }
+
+    if (
+      this.props.selectedHotspotLocation !== undefined &&
+      this.props.selectedHotspotLocation !== prevProps.selectedHotspotLocation
+    ) {
+      const { selectedHotspot } = this.props;
+      this.handleToggleCategory(selectedHotspot.securityCategory, true);
+    }
   }
 
   componentWillUnmount() {
@@ -111,6 +122,7 @@ export default class HotspotList extends React.Component<Props, State> {
       isStaticListOfHotspots,
       loadingMore,
       selectedHotspot,
+      selectedHotspotLocation,
       statusFilter
     } = this.props;
 
@@ -149,7 +161,10 @@ export default class HotspotList extends React.Component<Props, State> {
                           hotspots={cat.hotspots}
                           onHotspotClick={this.props.onHotspotClick}
                           onToggleExpand={this.handleToggleCategory}
+                          onLocationClick={this.props.onLocationClick}
+                          onScroll={this.props.onScroll}
                           selectedHotspot={selectedHotspot}
+                          selectedHotspotLocation={selectedHotspotLocation}
                           title={cat.title}
                           isLastAndIncomplete={
                             isLastRiskGroup && isLastCategory && hotspots.length < hotspotsTotal

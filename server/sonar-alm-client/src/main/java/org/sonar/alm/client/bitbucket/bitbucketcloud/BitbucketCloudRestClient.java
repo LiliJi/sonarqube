@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import okhttp3.Credentials;
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
@@ -60,6 +61,7 @@ public class BitbucketCloudRestClient {
   private final String bitbucketCloudEndpoint;
   private final String accessTokenEndpoint;
 
+  @Inject
   public BitbucketCloudRestClient(OkHttpClient okHttpClient) {
     this(okHttpClient, ENDPOINT, ACCESS_TOKEN_ENDPOINT);
   }

@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -37,6 +37,11 @@ import org.sonar.db.qualityprofile.QProfileDto;
 import org.sonar.db.qualityprofile.RulesProfileDto;
 import org.sonar.db.rule.RuleDefinitionDto;
 import org.sonar.server.language.LanguageTesting;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfile;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileInsert;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileRepositoryRule;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileUpdate;
+import org.sonar.server.qualityprofile.builtin.BuiltInQualityProfilesUpdateListener;
 import org.sonar.server.tester.UserSessionRule;
 
 import static java.lang.String.format;

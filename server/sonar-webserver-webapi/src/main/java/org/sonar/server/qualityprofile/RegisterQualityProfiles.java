@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import org.picocontainer.Startable;
+import org.sonar.api.Startable;
 import org.sonar.api.server.ServerSide;
 import org.sonar.api.utils.System2;
 import org.sonar.api.utils.log.Logger;
@@ -39,6 +39,12 @@ import org.sonar.db.DbSession;
 import org.sonar.db.qualityprofile.DefaultQProfileDto;
 import org.sonar.db.qualityprofile.QProfileDto;
 import org.sonar.db.qualityprofile.RulesProfileDto;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfile;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileInsert;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileRepository;
+import org.sonar.server.qualityprofile.builtin.BuiltInQProfileUpdate;
+import org.sonar.server.qualityprofile.builtin.BuiltInQualityProfilesUpdateListener;
+import org.sonar.server.qualityprofile.builtin.QProfileName;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toMap;

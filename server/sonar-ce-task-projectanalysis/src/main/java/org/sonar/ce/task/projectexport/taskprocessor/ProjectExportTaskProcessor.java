@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -27,15 +27,15 @@ import org.sonar.ce.task.container.TaskContainerImpl;
 import org.sonar.ce.task.projectexport.ProjectExportContainerPopulator;
 import org.sonar.ce.task.projectexport.ProjectExportProcessor;
 import org.sonar.ce.task.taskprocessor.CeTaskProcessor;
-import org.sonar.core.platform.ComponentContainer;
+import org.sonar.core.platform.SpringComponentContainer;
 
 import static org.sonar.db.ce.CeTaskTypes.PROJECT_EXPORT;
 
 public class ProjectExportTaskProcessor implements CeTaskProcessor {
 
-  private final ComponentContainer componentContainer;
+  private final SpringComponentContainer componentContainer;
 
-  public ProjectExportTaskProcessor(ComponentContainer componentContainer) {
+  public ProjectExportTaskProcessor(SpringComponentContainer componentContainer) {
     this.componentContainer = componentContainer;
   }
 

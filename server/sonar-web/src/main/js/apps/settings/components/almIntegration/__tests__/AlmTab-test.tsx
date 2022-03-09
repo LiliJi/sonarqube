@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -86,6 +86,7 @@ function shallowRender(props: Partial<AlmTab['props']> = {}) {
       onCheck={jest.fn()}
       onDelete={jest.fn()}
       onUpdateDefinitions={jest.fn()}
+      settingsDefinitions={[]}
       {...props}
     />
   );

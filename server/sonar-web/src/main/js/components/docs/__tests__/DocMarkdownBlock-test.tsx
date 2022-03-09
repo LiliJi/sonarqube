@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -144,6 +144,8 @@ it('should correctly scroll to a specific heading if passed as a prop', () => {
   jest.runAllTimers();
 
   expect(scrollToElement).toBeCalledWith(element, { bottomOffset: 720 });
+  jest.runOnlyPendingTimers();
+  jest.useRealTimers();
 });
 
 function shallowRender(props: Partial<DocMarkdownBlock['props']> = {}) {

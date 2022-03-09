@@ -71,14 +71,12 @@ Then open the root file `build.gradle` as a project in Intellij or Eclipse.
 | ./gradlew command | Description |
 |---|---|
 | `dependencies`| list dependencies |
-| `dependencyCheckAnalyze` | list vulnerable dependencies |
-| `dependencyUpdates` | list the dependencies that could be updated |
 | `licenseFormat --rerun-tasks` | fix source headers by applying HEADER.txt |
 | `wrapper --gradle-version 5.2.1` | upgrade wrapper |
 
 License
 -------
 
-Copyright 2008-2021 SonarSource.
+Copyright 2008-2022 SonarSource.
 
 Licensed under the [GNU Lesser General Public License, Version 3.0](https://www.gnu.org/licenses/lgpl.txt)

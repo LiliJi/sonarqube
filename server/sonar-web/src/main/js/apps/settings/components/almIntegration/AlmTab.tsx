@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@ import {
   AlmBindingDefinitionBase,
   AlmSettingsBindingStatus
 } from '../../../../types/alm-settings';
+import { ExtendedSettingDefinition } from '../../../../types/settings';
 import { Dict } from '../../../../types/types';
 import { AlmTabs } from './AlmIntegration';
 import AlmTabRenderer from './AlmTabRenderer';
@@ -38,6 +39,7 @@ interface Props {
   onCheck: (definitionKey: string) => void;
   onDelete: (definitionKey: string) => void;
   onUpdateDefinitions: () => void;
+  settingsDefinitions: ExtendedSettingDefinition[];
 }
 
 interface State {
@@ -91,7 +93,8 @@ export default class AlmTab extends React.PureComponent<Props, State> {
       definitionStatus,
       loadingAlmDefinitions,
       loadingProjectCount,
-      multipleAlmEnabled
+      multipleAlmEnabled,
+      settingsDefinitions
     } = this.props;
     const { editDefinition, editedDefinition } = this.state;
 
@@ -112,6 +115,7 @@ export default class AlmTab extends React.PureComponent<Props, State> {
         onEdit={this.handleEdit}
         onCancel={this.handleCancel}
         afterSubmit={this.handleAfterSubmit}
+        settingsDefinitions={settingsDefinitions}
       />
     );
   }

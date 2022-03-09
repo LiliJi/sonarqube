@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -26,6 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.scanner.mediumtest.ScannerMediumTester;
+import org.springframework.beans.factory.BeanCreationException;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -43,8 +44,8 @@ public class NoLanguagesPluginsMediumTest {
     assertThatThrownBy(() -> tester
       .newAnalysis(new File(projectDir, "sonar-project.properties"))
       .execute())
-      .isInstanceOf(IllegalStateException.class)
-      .hasMessage("No language plugins are installed.");
+      .isInstanceOf(BeanCreationException.class)
+      .hasRootCauseMessage("No language plugins are installed.");
   }
 
   private File copyProject(String path) throws Exception {

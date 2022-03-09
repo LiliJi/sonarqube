@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -98,6 +98,16 @@ it('should update grouped hotspots when the list changes', () => {
   expect(wrapper.state().groupedHotspots[0].categories[0].hotspots).toHaveLength(1);
 });
 
+it('should expand the categories for which the location is selected', () => {
+  const wrapper = shallowRender({ hotspots, selectedHotspot: hotspots[0] });
+
+  wrapper.setState({ expandedCategories: { cat1: true, cat2: false } });
+
+  wrapper.setProps({ selectedHotspotLocation: 1 });
+
+  expect(wrapper.state().expandedCategories).toEqual({ cat1: true, cat2: true });
+});
+
 function shallowRender(props: Partial<HotspotList['props']> = {}) {
   return shallow<HotspotList>(
     <HotspotList
@@ -107,6 +117,8 @@ function shallowRender(props: Partial<HotspotList['props']> = {}) {
       loadingMore={false}
       onHotspotClick={jest.fn()}
       onLoadMore={jest.fn()}
+      onLocationClick={jest.fn()}
+      onScroll={jest.fn()}
       securityCategories={{}}
       selectedHotspot={mockRawHotspot({ key: 'h2' })}
       statusFilter={HotspotStatusFilter.TO_REVIEW}

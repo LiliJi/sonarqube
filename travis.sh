@@ -50,7 +50,7 @@ if [[ -n "${NEXT_TOKEN-}" ]]; then
       -Dsonar.login="$NEXT_TOKEN" \
       -Dsonar.branch.name="$TRAVIS_BRANCH"
   fi
-  
+
   # Wait for 5mins, hopefully the report will be processed.
   sleep 5m
   ./.travis/run_iris.sh

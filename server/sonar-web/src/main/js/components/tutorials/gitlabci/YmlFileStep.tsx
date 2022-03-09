@@ -1,6 +1,6 @@
 /*
  * SonarQube
- * Copyright (C) 2009-2021 SonarSource SA
+ * Copyright (C) 2009-2022 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
  * This program is free software; you can redistribute it and/or
@@ -19,10 +19,10 @@
  */
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+import withAppStateContext from '../../../app/components/app-state/withAppStateContext';
 import { ClipboardIconButton } from '../../../components/controls/clipboard';
 import { translate } from '../../../helpers/l10n';
 import { AppState } from '../../../types/types';
-import { withAppState } from '../../hoc/withAppState';
 import FinishButton from '../components/FinishButton';
 import GithubCFamilyExampleRepositories from '../components/GithubCFamilyExampleRepositories';
 import Step from '../components/Step';
@@ -112,4 +112,4 @@ export function YmlFileStep(props: YmlFileStepProps) {
   );
 }
 
-export default withAppState(YmlFileStep);
+export default withAppStateContext(YmlFileStep);
