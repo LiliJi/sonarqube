@@ -26,37 +26,5 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class BranchesListTest {
 
-  @Test
-  public void findDefaultBranch_givenNoBranches_returnEmptyOptional(){
-    BranchesList branchesList = new BranchesList();
-
-    Optional<Branch> defaultBranch = branchesList.findDefaultBranch();
-
-    assertThat(defaultBranch).isNotPresent();
-  }
-
-  @Test
-  public void findDefaultBranch_givenBranchesWithoutDefaultOne_returnEmptyOptional(){
-    BranchesList branchesList = new BranchesList();
-    branchesList.addBranch(new Branch("1", false));
-    branchesList.addBranch(new Branch("2", false));
-
-    Optional<Branch> defaultBranch = branchesList.findDefaultBranch();
-
-    assertThat(defaultBranch).isNotPresent();
-  }
-
-  @Test
-  public void findDefaultBranch_givenBranchesWithDefaultOne_returnOptionalWithThisBranch(){
-    BranchesList branchesList = new BranchesList();
-    branchesList.addBranch(new Branch("1", false));
-    branchesList.addBranch(new Branch("2", false));
-    branchesList.addBranch(new Branch("default", true));
-
-    Optional<Branch> defaultBranchOptional = branchesList.findDefaultBranch();
-
-    assertThat(defaultBranchOptional).isPresent();
-    assertThat(defaultBranchOptional.get().isDefault()).isTrue();
-    assertThat(defaultBranchOptional.get().getName()).isEqualTo("default");
-  }
+ 
 }

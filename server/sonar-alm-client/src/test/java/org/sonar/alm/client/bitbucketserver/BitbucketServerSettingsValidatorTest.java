@@ -47,49 +47,7 @@ public class BitbucketServerSettingsValidatorTest {
     when(settings.getEncryption()).thenReturn(encryption);
   }
 
-  @Test
-  public void validate_success() {
-    AlmSettingDto almSettingDto = createNewBitbucketDto("http://abc.com", "abc");
-    when(encryption.isEncrypted(any())).thenReturn(false);
-
-    underTest.validate(almSettingDto);
-
-    verify(bitbucketServerRestClient, times(1)).validateUrl("http://abc.com");
-    verify(bitbucketServerRestClient, times(1)).validateToken("http://abc.com", "abc");
-    verify(bitbucketServerRestClient, times(1)).validateReadPermission("http://abc.com", "abc");
-  }
-
-  @Test
-  public void validate_success_with_encrypted_token() {
-    String encryptedToken = "abc";
-    String decryptedToken = "decrypted-token";
-    AlmSettingDto almSettingDto = createNewBitbucketDto("http://abc.com", encryptedToken);
-    when(encryption.isEncrypted(encryptedToken)).thenReturn(true);
-    when(encryption.decrypt(encryptedToken)).thenReturn(decryptedToken);
-
-    underTest.validate(almSettingDto);
-
-    verify(bitbucketServerRestClient, times(1)).validateUrl("http://abc.com");
-    verify(bitbucketServerRestClient, times(1)).validateToken("http://abc.com", decryptedToken);
-    verify(bitbucketServerRestClient, times(1)).validateReadPermission("http://abc.com", decryptedToken);
-  }
-
-  @Test
-  public void validate_failure_on_incomplete_configuration() {
-    AlmSettingDto almSettingDto = createNewBitbucketDto(null, "abc");
-
-    assertThatThrownBy(() -> underTest.validate(almSettingDto))
-      .isInstanceOf(IllegalArgumentException.class);
-  }
-
-  @Test
-  public void validate_failure_on_bitbucket_server_api_error() {
-    doThrow(new IllegalArgumentException("error")).when(bitbucketServerRestClient).validateUrl(anyString());
-    AlmSettingDto almSettingDto = createNewBitbucketDto("http://abc.com", "abc");
-
-    assertThatThrownBy(() -> underTest.validate(almSettingDto))
-      .isInstanceOf(IllegalArgumentException.class);
-  }
+ 
 
   private AlmSettingDto createNewBitbucketDto(String url, String pat) {
     AlmSettingDto dto = new AlmSettingDto();

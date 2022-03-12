@@ -46,59 +46,6 @@ public class GitlabGlobalSettingsValidatorTest {
     when(settings.getEncryption()).thenReturn(encryption);
   }
 
-  @Test
-  public void validate_success() {
-    String token = "personal-access-token";
-    AlmSettingDto almSettingDto = new AlmSettingDto()
-      .setUrl("https://gitlab.com/api")
-      .setPersonalAccessToken("personal-access-token");
-    when(encryption.isEncrypted(token)).thenReturn(false);
-
-    underTest.validate(almSettingDto);
-    verify(gitlabHttpClient, times(1)).checkUrl(almSettingDto.getUrl());
-    verify(gitlabHttpClient, times(1)).checkToken(almSettingDto.getUrl(), almSettingDto.getDecryptedPersonalAccessToken(encryption));
-    verify(gitlabHttpClient, times(1)).checkReadPermission(almSettingDto.getUrl(), almSettingDto.getDecryptedPersonalAccessToken(encryption));
-    verify(gitlabHttpClient, times(1)).checkWritePermission(almSettingDto.getUrl(), almSettingDto.getDecryptedPersonalAccessToken(encryption));
-  }
-
-  @Test
-  public void validate_success_with_encrypted_token() {
-    String encryptedToken = "personal-access-token";
-    String decryptedToken = "decrypted-token";
-    AlmSettingDto almSettingDto = new AlmSettingDto()
-      .setUrl("https://gitlab.com/api")
-      .setPersonalAccessToken(encryptedToken);
-    when(encryption.isEncrypted(encryptedToken)).thenReturn(true);
-    when(encryption.decrypt(encryptedToken)).thenReturn(decryptedToken);
-
-    underTest.validate(almSettingDto);
-
-    verify(gitlabHttpClient, times(1)).checkUrl(almSettingDto.getUrl());
-    verify(gitlabHttpClient, times(1)).checkToken(almSettingDto.getUrl(), decryptedToken);
-    verify(gitlabHttpClient, times(1)).checkReadPermission(almSettingDto.getUrl(), decryptedToken);
-    verify(gitlabHttpClient, times(1)).checkWritePermission(almSettingDto.getUrl(), decryptedToken);
-  }
-
-  @Test
-  public void validate_fail_url_not_set() {
-    AlmSettingDto almSettingDto = new AlmSettingDto()
-      .setUrl(null)
-      .setPersonalAccessToken("personal-access-token");
-
-    assertThatThrownBy(() -> underTest.validate(almSettingDto))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage("Your Gitlab global configuration is incomplete.");
-  }
-
-  @Test
-  public void validate_fail_pat_not_set() {
-    AlmSettingDto almSettingDto = new AlmSettingDto()
-      .setUrl("https://gitlab.com/api")
-      .setPersonalAccessToken(null);
-
-    assertThatThrownBy(() -> underTest.validate(almSettingDto))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage("Your Gitlab global configuration is incomplete.");
-  }
+ 
 
 }
