@@ -45,7 +45,7 @@ function renderCoverage(props: ProjectCardMeasuresProps) {
   const coverageMetric = isNewCode ? MetricKey.new_coverage : MetricKey.coverage;
 
   return (
-    <ProjectCardMeasure metricKey={coverageMetric} label={translate('metric.coverage.name')}>
+    <ProjectCardMeasure metricKey={coverageMetric} label="REMEDIATION">
       <div className="display-flex-center">
         <Measure
           className="big"
@@ -63,32 +63,7 @@ function renderCoverage(props: ProjectCardMeasuresProps) {
   );
 }
 
-function renderDuplication(props: ProjectCardMeasuresProps) {
-  const { measures, isNewCode } = props;
-  const duplicationMetric = isNewCode
-    ? MetricKey.new_duplicated_lines_density
-    : MetricKey.duplicated_lines_density;
 
-  return (
-    <ProjectCardMeasure
-      metricKey={duplicationMetric}
-      label={translate('metric.duplicated_lines_density.short_name')}>
-      <div className="display-flex-center">
-        <Measure
-          className="big"
-          metricKey={duplicationMetric}
-          metricType="PERCENT"
-          value={measures[duplicationMetric]}
-        />
-        {measures[duplicationMetric] != null && (
-          <span className="spacer-left project-card-measure-secondary-info">
-            <DuplicationsRating value={Number(measures[duplicationMetric])} />
-          </span>
-        )}
-      </div>
-    </ProjectCardMeasure>
-  );
-}
 
 function renderRatings(props: ProjectCardMeasuresProps) {
   const { isNewCode, measures } = props;
@@ -153,17 +128,8 @@ function renderRatings(props: ProjectCardMeasuresProps) {
 export default function ProjectCardMeasures(props: ProjectCardMeasuresProps) {
   const { isNewCode, measures, componentQualifier, newCodeStartingDate } = props;
 
-  const { ncloc } = measures;
+ // const { ncloc } = measures;
 
-  if (!isNewCode && !ncloc) {
-    return (
-      <div className="note big-spacer-top">
-        {componentQualifier === ComponentQualifier.Application
-          ? translate('portfolio.app.empty')
-          : translate('overview.project.main_branch_empty')}
-      </div>
-    );
-  }
 
   const newCodeTimespan = newCodeStartingDate
     ? differenceInMilliseconds(Date.now(), newCodeStartingDate)

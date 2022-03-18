@@ -163,29 +163,7 @@ export class Menu extends React.PureComponent<Props> {
   };
 
   renderDashboardLink = () => {
-    const { id, ...branchLike } = this.getQuery();
-
-    if (this.isPortfolio()) {
-      return this.isGovernanceEnabled() ? (
-        <li>
-          <Link activeClassName="active" to={getPortfolioUrl(id)}>
-            {translate('overview.page')}
-          </Link>
-        </li>
-      ) : null;
-    }
-
-    const isApplicationChildInaccessble = this.isApplicationChildInaccessble();
-    if (isApplicationChildInaccessble) {
-      return this.renderLinkWhenInaccessibleChild(translate('overview.page'));
-    }
-    return (
-      <li>
-        <Link activeClassName="active" to={getProjectQueryUrl(id, branchLike)}>
-          {translate('overview.page')}
-        </Link>
-      </li>
-    );
+    return null;
   };
 
   renderBreakdownLink = () => {
@@ -589,7 +567,7 @@ export class Menu extends React.PureComponent<Props> {
             href="#"
             id="component-navigation-more"
             onClick={onToggleClick}>
-            {translate('more')}
+            "Lingoport"
             <DropdownIcon className="little-spacer-left" />
           </a>
         )}
@@ -601,10 +579,8 @@ export class Menu extends React.PureComponent<Props> {
     return (
       <div className="display-flex-center display-flex-space-between">
         <NavBarTabs>
-          {this.renderDashboardLink()}
           {this.renderBreakdownLink()}
           {this.renderIssuesLink()}
-          {this.renderSecurityHotspotsLink()}
           {this.renderSecurityReports()}
           {this.renderComponentMeasuresLink()}
           {this.renderCodeLink()}
