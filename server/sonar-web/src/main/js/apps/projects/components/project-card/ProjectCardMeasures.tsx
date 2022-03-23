@@ -138,7 +138,6 @@ export default function ProjectCardMeasures(props: ProjectCardMeasuresProps) {
   const measureList = [
     ...renderRatings(props),
     renderCoverage(props),
-    renderDuplication(props)
   ].filter(isDefined);
 
   return (

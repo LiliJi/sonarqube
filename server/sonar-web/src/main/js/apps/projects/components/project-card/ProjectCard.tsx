@@ -31,7 +31,7 @@ import Measure from '../../../../components/measure/Measure';
 import TagsList from '../../../../components/tags/TagsList';
 import SizeRating from '../../../../components/ui/SizeRating';
 import { translate, translateWithParameters } from '../../../../helpers/l10n';
-import { getProjectUrl } from '../../../../helpers/urls';
+import { getLingoportProjectUrl } from '../../../../helpers/urls';
 import { isLoggedIn } from '../../../../helpers/users';
 import { ComponentQualifier } from '../../../../types/component';
 import { MetricKey } from '../../../../types/metrics';
@@ -96,7 +96,7 @@ function renderFirstLine(project: Props['project'], handleFavorite: Props['handl
           </Tooltip>
         )}
         <h3 className="h2 project-card-name text-ellipsis" title={name}>
-          {needIssueSync ? name : <Link to={getProjectUrl(key)}>{name}</Link>}
+          {needIssueSync ? name : <Link to={getLingoportProjectUrl(key)}>{name}</Link>}
         </h3>
 
         {analysisDate && (
@@ -217,7 +217,7 @@ function renderMeasures(
         !analysisDate &&
         isLoggedIn(currentUser) &&
         !needIssueSync && (
-          <Link className="button spacer-left" to={getProjectUrl(key)}>
+          <Link className="button spacer-left" to={getLingoportProjectUrl(key)}>
             {translate('projects.configure_analysis')}
           </Link>
         )}

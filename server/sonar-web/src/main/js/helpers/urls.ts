@@ -61,8 +61,14 @@ export function getComponentAdminUrl(
 }
 
 export function getProjectUrl(project: string, branch?: string): Location {
-  return { pathname: '/dashboard', query: { id: project, branch } };
+  return { pathname: '/project/extension/lingoport/overview_page', query: { id: project, branch } };
 }
+
+export function getLingoportProjectUrl(project: string, branch?: string): Location {
+  return { pathname: '/project/extension/lingoport/overview_page', query: { id: project, branch } };
+}
+
+
 
 export function getProjectQueryUrl(project: string, branchParameters?: BranchParameters): Location {
   return { pathname: '/dashboard', query: { id: project, ...branchParameters } };

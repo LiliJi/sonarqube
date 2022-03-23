@@ -567,7 +567,7 @@ export class Menu extends React.PureComponent<Props> {
             href="#"
             id="component-navigation-more"
             onClick={onToggleClick}>
-            "Lingoport"
+            Lingoport
             <DropdownIcon className="little-spacer-left" />
           </a>
         )}
