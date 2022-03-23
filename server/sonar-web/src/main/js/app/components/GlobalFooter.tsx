@@ -38,6 +38,13 @@ export function GlobalFooter({ hideLoggedInInfo, appState }: GlobalFooterProps) 
 
   return (
     <div className="page-footer page-container" id="footer">
+        <ul>
+      <li><a href="https://wiki.lingoport.com/About_Dashboard" target="top">Help on Lingoport Dashboard 9.4.1</a></li>
+
+
+      <li >Internationalization Software by <a href="http://www.lingoport.com/" target="_blank" className="external">
+        <img src="../../../images/lingoport/lingoport_logo.png" width="97" height="23"/></a></li>
+     </ul>
       {appState?.productionDatabase === false && (
         <Alert display="inline" id="evaluation_warning" variant="warning">
           <p className="big">{translate('footer.production_database_warning')}</p>

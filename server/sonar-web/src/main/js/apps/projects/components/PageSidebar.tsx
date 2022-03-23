@@ -73,7 +73,6 @@ export default function PageSidebar(props: PageSidebarProps) {
 
         <h2 className="h3">{translate('filters')}</h2>
       </div>
-      <QualityGateFilter {...facetProps} facet={getFacet(facets, 'gate')} value={query.gate} />
       {!isLeakView && (
         <>
           <ReliabilityFilter
@@ -81,28 +80,14 @@ export default function PageSidebar(props: PageSidebarProps) {
             facet={getFacet(facets, 'reliability')}
             value={query.reliability}
           />
-          <SecurityFilter
-            {...facetProps}
-            facet={getFacet(facets, 'security')}
-            value={query.security}
-          />
 
-          <SecurityReviewFilter
-            {...facetProps}
-            facet={getFacet(facets, 'security_review')}
-            value={query.security_review_rating}
-          />
 
           <MaintainabilityFilter
             {...facetProps}
             facet={getFacet(facets, 'maintainability')}
             value={query.maintainability}
           />
-          <CoverageFilter
-            {...facetProps}
-            facet={getFacet(facets, 'coverage')}
-            value={query.coverage}
-          />
+      
           <DuplicationsFilter
             {...facetProps}
             facet={getFacet(facets, 'duplications')}

@@ -46,7 +46,7 @@ import ProjectCardQualityGate from './ProjectCardQualityGate';
 interface Props {
   currentUser: CurrentUser;
   handleFavorite: (component: string, isFavorite: boolean) => void;
-  height: number;
+  height: 80;
   project: Project;
   type?: string;
 }
@@ -73,28 +73,9 @@ function renderFirstLine(project: Props['project'], handleFavorite: Props['handl
             component={key}
             favorite={isFavorite}
             handleFavorite={handleFavorite}
-            qualifier={qualifier}
           />
         )}
-        {qualifier === ComponentQualifier.Application && (
-          <Tooltip
-            placement="top"
-            overlay={
-              <span>
-                {translate('qualifier.APP')}
-                {measures.projects && (
-                  <span>
-                    {' ‒ '}
-                    {translateWithParameters('x_projects_', measures.projects)}
-                  </span>
-                )}
-              </span>
-            }>
-            <span className="spacer-right">
-              <QualifierIcon qualifier={qualifier} />
-            </span>
-          </Tooltip>
-        )}
+   
         <h3 className="h2 project-card-name text-ellipsis" title={name}>
           {needIssueSync ? name : <Link to={getLingoportProjectUrl(key)}>{name}</Link>}
         </h3>
@@ -118,16 +99,6 @@ function renderFirstLine(project: Props['project'], handleFavorite: Props['handl
             </DateTimeFormatter>
           </>
         )}
-      </div>
-      <div className="project-card-meta big-padded padded-bottom display-flex-center">
-        <div className="display-flex-center overflow-hidden">
-          <PrivacyBadgeContainer
-            className="spacer-right"
-            qualifier={qualifier}
-            visibility={visibility}
-          />
-          {tags.length > 0 && <TagsList className="text-ellipsis" tags={tags} />}
-        </div>
       </div>
     </div>
   );
@@ -237,7 +208,6 @@ export default function ProjectCard(props: Props) {
       data-key={project.key}
       style={{ height }}>
       {renderFirstLine(project, props.handleFavorite)}
-      {renderSecondLine(currentUser, project, isNewCode)}
     </div>
   );
 }
