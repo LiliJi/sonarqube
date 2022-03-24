@@ -43,7 +43,7 @@ export function GlobalFooter({ hideLoggedInInfo, appState }: GlobalFooterProps) 
 
 
       <li >Internationalization Software by <a href="http://www.lingoport.com/" target="_blank" className="external">
-        <img src="../../../images/lingoport/lingoport_logo.png" width="97" height="23"/></a></li>
+        <img src="/../../../../images/lingoport/lingoport_logo.png" width="97" height="23"/></a></li>
      </ul>
       {appState?.productionDatabase === false && (
         <Alert display="inline" id="evaluation_warning" variant="warning">

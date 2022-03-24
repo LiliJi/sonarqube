@@ -46,7 +46,7 @@ import ProjectCardQualityGate from './ProjectCardQualityGate';
 interface Props {
   currentUser: CurrentUser;
   handleFavorite: (component: string, isFavorite: boolean) => void;
-  height: 80;
+  height: number;
   project: Project;
   type?: string;
 }
@@ -82,7 +82,6 @@ function renderFirstLine(project: Props['project'], handleFavorite: Props['handl
 
         {analysisDate && (
           <>
-            <ProjectCardQualityGate status={measures[MetricKey.alert_status]} />
             <span className="flex-grow" />
             <DateTimeFormatter date={analysisDate}>
               {formattedAnalysisDate => (
@@ -199,14 +198,13 @@ function renderMeasures(
 export default function ProjectCard(props: Props) {
   const { currentUser, height, type, project } = props;
   const isNewCode = type === 'leak';
-
   return (
     <div
       className={classNames('display-flex-column boxed-group it_project_card', {
         'project-card-disabled': project.needIssueSync
       })}
       data-key={project.key}
-      style={{ height }}>
+      style={{ height :'80px'}} >
       {renderFirstLine(project, props.handleFavorite)}
     </div>
   );
