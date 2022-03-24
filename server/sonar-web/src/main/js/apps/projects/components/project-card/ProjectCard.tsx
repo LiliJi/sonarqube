@@ -204,7 +204,7 @@ export default function ProjectCard(props: Props) {
         'project-card-disabled': project.needIssueSync
       })}
       data-key={project.key}
-      style={{ height :'80px'}} >
+      style={{ height :'60px'}} >
       {renderFirstLine(project, props.handleFavorite)}
     </div>
   );
