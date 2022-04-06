@@ -49,9 +49,10 @@ interface Props {
   height: number;
   project: Project;
   type?: string;
+  lrm:any;
 }
 
-function renderFirstLine(project: Props['project'], handleFavorite: Props['handleFavorite']) {
+function renderFirstLine(lrm:Props['lrm'], project: Props['project'], handleFavorite: Props['handleFavorite']) {
   const {
     analysisDate,
     tags,
@@ -63,8 +64,18 @@ function renderFirstLine(project: Props['project'], handleFavorite: Props['handl
     needIssueSync,
     visibility
   } = project;
-
-  return (
+  if(lrm ===undefined){
+    lrm={
+      issues: "-",
+      rci: "-",
+      comp: "-",
+      rem: "-"
+    }
+  }
+  let link = '/project/extension/lingoport/globalyzer_page?id='+key+'&qualifier=TRK'
+  let lrm_link = '/project/extension/lingoport/lrm_page?id='+key+'&qualifier=TRK'
+  if(lrm.comp===undefined||lrm.comp==="-"||lrm.comp===" "||lrm.comp===""){
+   return (
     <div className="display-flex-center">
       <div className="project-card-main big-padded padded-bottom display-flex-center">
         {isFavorite !== undefined && (
@@ -79,7 +90,11 @@ function renderFirstLine(project: Props['project'], handleFavorite: Props['handl
         <h3 className="h2 project-card-name text-ellipsis" title={name}>
           {needIssueSync ? name : <Link to={getLingoportProjectUrl(key)}>{name}</Link>}
         </h3>
-
+            
+        <h6>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GLOBALYZER ISSUES : <a href ={link}>{lrm.issues}</a>
+        </h6>
+              
         {analysisDate && (
           <>
             <span className="flex-grow" />
@@ -101,6 +116,97 @@ function renderFirstLine(project: Props['project'], handleFavorite: Props['handl
       </div>
     </div>
   );
+  
+  }else{
+  if(lrm.issues===undefined||lrm.issues==="-"||lrm.issues===" "||lrm.issues===""||lrm.issues==="0"){
+  return (
+    <div className="display-flex-center">
+      <div className="project-card-main big-padded padded-bottom display-flex-center">
+        {isFavorite !== undefined && (
+          <Favorite
+            className="spacer-right"
+            component={key}
+            favorite={isFavorite}
+            handleFavorite={handleFavorite}
+          />
+        )}
+   
+        <h3 className="h2 project-card-name text-ellipsis" title={name}>
+          {needIssueSync ? name : <Link to={getLingoportProjectUrl(key)}>{name}</Link>}
+        </h3>
+
+        <h6>                          
+        &nbsp;&nbsp;&nbsp;Localyzer AVG COMPLETE : <a href ={lrm_link}>{lrm.comp}%</a>
+        </h6>
+        
+        {analysisDate && (
+          <>
+            <span className="flex-grow" />
+            <DateTimeFormatter date={analysisDate}>
+              {formattedAnalysisDate => (
+                <span className="note big-spacer-left text-ellipsis" title={formattedAnalysisDate}>
+                  <FormattedMessage
+                    id="projects.last_analysis_on_x"
+                    defaultMessage={translate('projects.last_analysis_on_x')}
+                    values={{
+                      date: <DateFromNow date={analysisDate} />
+                    }}
+                  />
+                </span>
+              )}
+            </DateTimeFormatter>
+          </>
+        )}
+      </div>
+    </div>
+  );
+  }else{
+   return (
+    <div className="display-flex-center">
+      <div className="project-card-main big-padded padded-bottom display-flex-center">
+        {isFavorite !== undefined && (
+          <Favorite
+            className="spacer-right"
+            component={key}
+            favorite={isFavorite}
+            handleFavorite={handleFavorite}
+          />
+        )}
+   
+        <h3 className="h2 project-card-name text-ellipsis" title={name}>
+          {needIssueSync ? name : <Link to={getLingoportProjectUrl(key)}>{name}</Link>}
+        </h3>
+       <h6>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GLOBALYZER ISSUES : <a href ={link}>{lrm.issues}</a>
+        </h6>
+        <h6>                          
+        &nbsp;&nbsp;&nbsp;Localyzer AVG COMPLETE : <a href ={lrm_link}>{lrm.comp}%</a>
+        </h6>
+        
+        {analysisDate && (
+          <>
+            <span className="flex-grow" />
+            <DateTimeFormatter date={analysisDate}>
+              {formattedAnalysisDate => (
+                <span className="note big-spacer-left text-ellipsis" title={formattedAnalysisDate}>
+                  <FormattedMessage
+                    id="projects.last_analysis_on_x"
+                    defaultMessage={translate('projects.last_analysis_on_x')}
+                    values={{
+                      date: <DateFromNow date={analysisDate} />
+                    }}
+                  />
+                </span>
+              )}
+            </DateTimeFormatter>
+          </>
+        )}
+      </div>
+    </div>
+  );
+  
+  }
+ }   
 }
 
 function renderSecondLine(
@@ -205,7 +311,7 @@ export default function ProjectCard(props: Props) {
       })}
       data-key={project.key}
       style={{ height :'60px'}} >
-      {renderFirstLine(project, props.handleFavorite)}
+      {renderFirstLine(props.lrm,project, props.handleFavorite)}
     </div>
   );
 }
