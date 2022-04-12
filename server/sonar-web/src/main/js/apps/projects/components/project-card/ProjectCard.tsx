@@ -92,7 +92,8 @@ function renderFirstLine(lrm:Props['lrm'], project: Props['project'], handleFavo
         </h3>
             
         <h6>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GLOBALYZER ISSUES : <a href ={link}>{lrm.issues}</a>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;         <img src="/../../../../../../images/lingoport/globalyzericon.png" width="23" height="23"/>
+        Globalyzer Issues : <a href ={link}>{lrm.issues}</a>
         </h6>
               
         {analysisDate && (
@@ -136,7 +137,8 @@ function renderFirstLine(lrm:Props['lrm'], project: Props['project'], handleFavo
         </h3>
 
         <h6>                          
-        &nbsp;&nbsp;&nbsp;Localyzer AVG COMPLETE : <a href ={lrm_link}>{lrm.comp}%</a>
+        &nbsp;&nbsp;&nbsp;&nbsp; <img src="/../../../../../../images/lingoport/localyzericon.png" width="23" height="23"/>    
+        &#8202;Localyzer Avg Complete : <a href ={lrm_link}>{lrm.comp}%</a>
         </h6>
         
         {analysisDate && (
@@ -177,10 +179,12 @@ function renderFirstLine(lrm:Props['lrm'], project: Props['project'], handleFavo
           {needIssueSync ? name : <Link to={getLingoportProjectUrl(key)}>{name}</Link>}
         </h3>
        <h6>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;GLOBALYZER ISSUES : <a href ={link}>{lrm.issues}</a>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;         <img src="/../../../../../../images/lingoport/globalyzericon.png" width="23" height="23"/>
+        Globalyzer Issues : <a href ={link}>{lrm.issues}</a>
         </h6>
         <h6>                          
-        &nbsp;&nbsp;&nbsp;Localyzer AVG COMPLETE : <a href ={lrm_link}>{lrm.comp}%</a>
+        &nbsp;&nbsp;&nbsp;&nbsp;   <img src="/../../../../../../images/lingoport/localyzericon.png" width="23" height="23"/>
+        &#8202;Localyzer Avg Complete : <a href ={lrm_link}>{lrm.comp}%</a>
         </h6>
         
         {analysisDate && (

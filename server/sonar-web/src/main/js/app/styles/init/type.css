@@ -112,8 +112,8 @@ h6,
 .h6 {
   line-height: var(--controlHeight);
   color: var(--baseFontColor);
-  font-size: var(--baseFontSize);
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 h6 img,
