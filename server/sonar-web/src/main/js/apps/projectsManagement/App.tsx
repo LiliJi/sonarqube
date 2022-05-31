@@ -57,7 +57,7 @@ interface State {
   visibility?: Visibility;
 }
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 500;
 
 export class App extends React.PureComponent<Props, State> {
   mounted = false;
