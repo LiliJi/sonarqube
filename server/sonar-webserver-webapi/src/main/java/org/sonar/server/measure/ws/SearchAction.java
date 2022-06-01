@@ -62,7 +62,7 @@ import static org.sonar.server.component.ws.MeasuresWsParameters.PARAM_PROJECT_K
 
 public class SearchAction implements MeasuresWsAction {
 
-  private static final int MAX_NB_PROJECTS = 100;
+  private static final int MAX_NB_PROJECTS = 500;
   private static final Set<String> ALLOWED_QUALIFIERS = ImmutableSet.of(PROJECT, APP, VIEW, SUBVIEW);
 
   private final UserSession userSession;
