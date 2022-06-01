@@ -72,7 +72,7 @@ const LEAK_METRICS = [
   MetricKey.new_duplicated_lines_density
 ];
 
-const PAGE_SIZE = 100;
+const PAGE_SIZE = 500;
 
 interface Children {
   components: ComponentMeasure[];

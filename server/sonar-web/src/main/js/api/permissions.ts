@@ -28,7 +28,7 @@ import {
 } from '../types/types';
 import { BaseSearchProjectsParameters } from './components';
 
-const PAGE_SIZE = 100;
+const PAGE_SIZE = 500;
 
 export function grantPermissionToUser(data: {
   projectKey?: string;
