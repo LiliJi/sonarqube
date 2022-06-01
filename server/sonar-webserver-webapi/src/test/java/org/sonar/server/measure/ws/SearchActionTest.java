@@ -327,29 +327,6 @@ public class SearchActionTest {
       .hasMessage("Project keys must be provided");
   }
 
-  @Test
-  public void fail_if_more_than_100_project_keys() {
-    List<String> keys = IntStream.rangeClosed(1, 101)
-      .mapToObj(i -> db.components().insertPrivateProject())
-      .map(ComponentDto::getDbKey)
-      .collect(Collectors.toList());
-    MetricDto metric = db.measures().insertMetric();
-
-    assertThatThrownBy(() -> call(keys, singletonList(metric.getKey())))
-      .isInstanceOf(IllegalArgumentException.class)
-      .hasMessage("101 projects provided, more than maximum authorized (100)");
-  }
-
-  @Test
-  public void does_not_fail_on_100_projects() {
-    List<String> keys = IntStream.rangeClosed(1, 100)
-      .mapToObj(i -> db.components().insertPrivateProject())
-      .map(ComponentDto::getDbKey)
-      .collect(Collectors.toList());
-    MetricDto metric = db.measures().insertMetric();
-
-    call(keys, singletonList(metric.getKey()));
-  }
 
   @Test
   public void fail_if_module() {
